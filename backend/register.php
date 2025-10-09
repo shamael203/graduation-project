@@ -1,9 +1,12 @@
 <?php
+include 'boo_exchange.php';
 include 'connect.php';
 
+$message = ""; // متغير لتخزين الرسائل
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["name"];
-    $email = $_POST["email"];
+    $name = trim($_POST["name"]);
+    $email = trim($_POST["email"]);
     $password = $_POST["password"];
 
     // تحقق إذا البريد موجود مسبقًا
@@ -13,21 +16,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        echo "<p style='color:red;'>⚠️ هذا البريد الإلكتروني مستخدم مسبقًا</p>";
+        // البريد موجود مسبقًا
+        $message = "<div class='alert error'>⚠️ البريد الإلكتروني مسجل مسبقًا. يرجى استخدام بريد آخر.</div>";
     } else {
         // البريد غير موجود، نسجل المستخدم
-
-        // تشفير كلمة المرور
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        // الاستعلام المحضر للإضافة
         $stmt_insert = $conn->prepare("INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())");
         $stmt_insert->bind_param("sss", $name, $email, $hashed_password);
 
         if ($stmt_insert->execute()) {
-            echo "<p style='color:green;'>✅ تم التسجيل بنجاح</p>";
+            $message = "<div class='alert success'>✅ تم التسجيل بنجاح! مرحبًا بك في BookSwap.</div>";
         } else {
-            echo "<p style='color:red;'>⚠️ حدث خطأ: " . $stmt_insert->error . "</p>";
+            $message = "<div class='alert error'>⚠️ حدث خطأ أثناء التسجيل. حاول مرة أخرى لاحقًا.</div>";
         }
         $stmt_insert->close();
     }
@@ -35,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 }
 ?>
-
 
 <!doctype html>
 <html lang="ar">
@@ -45,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    /* الأساسيات */
     body {
       font-family: "Tajawal", "Segoe UI", Arial, sans-serif;
       direction: rtl;
@@ -59,7 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       justify-content: center;
     }
 
-    /* الصندوق الرئيسي */
     .container {
       background: #fff;
       padding: 35px 40px;
@@ -75,7 +72,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
-    /* العنوان */
     h2 {
       text-align: center;
       color: #1a237e;
@@ -83,7 +79,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       font-size: 1.6rem;
     }
 
-    /* التسميات والحقول */
     label {
       display: block;
       margin-bottom: 6px;
@@ -108,7 +103,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       outline: none;
     }
 
-    /* الزر */
     button {
       width: 100%;
       padding: 12px;
@@ -127,20 +121,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       transform: scale(1.02);
     }
 
-    /* الرسائل */
-    .error {
+    .alert {
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .alert.error {
+      background: #ffe5e5;
       color: #b00020;
-      font-size: 14px;
-      margin-bottom: 10px;
+      border: 1px solid #f5b7b1;
     }
 
-    .success {
+    .alert.success {
+      background: #e9f7ef;
       color: #006400;
-      font-size: 14px;
-      margin-bottom: 10px;
+      border: 1px solid #a9dfbf;
     }
 
-    /* للهواتف */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (max-width: 500px) {
       .container {
         padding: 25px 20px;
@@ -152,6 +158,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
   <div class="container">
     <h2>تسجيل مستخدم جديد</h2>
+
+    <?php if (!empty($message)) echo $message; ?>
+
     <form action="register.php" method="POST" novalidate>
       <label for="name">الاسم</label>
       <input id="name" name="name" type="text" required minlength="2" maxlength="100" placeholder="اكتب اسمك الكامل">
