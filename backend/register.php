@@ -1,5 +1,4 @@
 <?php
-include 'boo_exchange.php';
 include 'connect.php';
 
 $message = ""; // متغير لتخزين الرسائل
