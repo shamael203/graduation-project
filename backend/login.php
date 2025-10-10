@@ -6,8 +6,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    $sql = "SELECT * FROM users WHERE email='$email'";
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
@@ -114,7 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>تسجيل الدخول</h2>
     <form action="login.php" method="POST">
       <label for="email">البريد الإلكتروني</label>
-      <input type="email" id="email" name="email" required>
+     <input type="email" name="email" value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>" autocomplete="off" required>
+
 
       <label for="password">كلمة المرور</label>
       <input type="password" id="password" name="password" required>
