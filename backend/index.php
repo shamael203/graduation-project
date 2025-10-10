@@ -1,4 +1,4 @@
 <?php
-// توجيه المستخدم مباشرة إلى مجلد الواجهة الأمامية
-header("Location: frontend/");
+// مثال توجيه للصفحة الرئيسية للباك اند
+header("Location: login.php");
 exit;
