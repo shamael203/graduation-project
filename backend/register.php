@@ -25,6 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt_insert->execute()) {
             $message = "<div class='alert success'>✅ تم التسجيل بنجاح! مرحبًا بك في BookSwap.</div>";
+            header("Location: login.php");
+            exit; 
+
         } else {
             $message = "<div class='alert error'>⚠️ حدث خطأ أثناء التسجيل. حاول مرة أخرى لاحقًا.</div>";
         }
@@ -33,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $stmt->close();
 }
+
 ?>
 
 <!doctype html>
