@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         // البريد غير موجود، نسجل المستخدم
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        
         $stmt_insert = $conn->prepare("INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())");
         $stmt_insert->bind_param("sss", $name, $email, $hashed_password);
 
