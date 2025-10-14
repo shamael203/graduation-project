@@ -1,13 +1,14 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['name']) || !isset($_SESSION['email'])) {
+if (!isset($_SESSION['user_name']) || !isset($_SESSION['user_email'])) {
     header("Location: login.php");
     exit();
 }
 
-$name = $_SESSION['name'];
-$email = $_SESSION['email'];
+$name = $_SESSION['user_name'];
+$email = $_SESSION['user_email'];
+
 ?>
 
 <!DOCTYPE html>
