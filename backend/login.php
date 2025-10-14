@@ -1,22 +1,27 @@
 <?php
 session_start();
+session_unset();
+session_destroy();
+session_start();
 include 'connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
+    echo "الإيميل المستلم: " . htmlspecialchars($email); // ← اختياري مؤقت
 
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        
+
         if (password_verify($password, $row["password"])) {
             $_SESSION["user_name"] = $row["name"];
+            $_SESSION["user_email"] = $row["email"]; // ← تأكد إنك تخزن البريد الجديد
             header("Location: welcome.php");
             exit();
         } else {
@@ -27,6 +32,7 @@ $result = $stmt->get_result();
     }
 }
 ?>
+
 
 @ -0,0 +1,160 @@
 <!DOCTYPE html>
@@ -173,12 +179,12 @@ $result = $stmt->get_result();
       <div class="alert error">❌ Email not found</div>
     <?php endif; ?>
 
-    <form action="login.php" method="POST">
+    <form action="login.php" method="POST"  autocomplete="off">
       <label for="email">Email Address</label>
       <input type="email" name="email" id="email" required autocomplete="off" />
 
       <label for="password">Password</label>
-      <input type="password" name="password" id="password" required />
+      <input type="password" name="password" id="password" required autocomplete="new-password" />
 
       <button type="submit">Log In</button>
 
