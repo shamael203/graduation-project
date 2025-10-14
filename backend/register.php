@@ -8,37 +8,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
 
-    // تحقق إذا البريد موجود مسبقًا
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
-        // البريد موجود مسبقًا
-        $message = "<div class='alert error'>⚠️ البريد الإلكتروني مسجل مسبقًا. يرجى استخدام بريد آخر.</div>";
+    // تحقق من الحقول
+    if (empty($name) || empty($email) || empty($password)) {
+        $message = "<div class='alert error'>⚠️ جميع الحقول مطلوبة.</div>";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = "<div class='alert error'>⚠️ البريد الإلكتروني غير صالح.</div>";
+    } elseif (strlen($password) < 8) {
+        $message = "<div class='alert error'>⚠️ يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل.</div>";
     } else {
-        // البريد غير موجود، نسجل المستخدم
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        
-        $stmt_insert = $conn->prepare("INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())");
-        $stmt_insert->bind_param("sss", $name, $email, $hashed_password);
+        // تحقق إذا البريد موجود مسبقًا
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
 
-        if ($stmt_insert->execute()) {
-            $message = "<div class='alert success'>✅ تم التسجيل بنجاح! مرحبًا بك في BookSwap.</div>";
-            header("Location: login.php");
-            exit; 
-
+        if ($stmt->num_rows > 0) {
+            $message = "<div class='alert error'>⚠️ البريد الإلكتروني مسجل مسبقًا. يرجى استخدام بريد آخر.</div>";
         } else {
-            $message = "<div class='alert error'>⚠️ حدث خطأ أثناء التسجيل. حاول مرة أخرى لاحقًا.</div>";
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            $stmt_insert = $conn->prepare("INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())");
+            $stmt_insert->bind_param("sss", $name, $email, $hashed_password);
+
+            if ($stmt_insert->execute()) {
+                $message = "<div class='alert success'>✅ تم التسجيل بنجاح! مرحبًا بك في BookSwap.</div>";
+                header("Location: login.php");
+                exit;
+            } else {
+                $message = "<div class='alert error'>⚠️ حدث خطأ أثناء التسجيل. حاول مرة أخرى لاحقًا.</div>";
+            }
+            $stmt_insert->close();
         }
-        $stmt_insert->close();
+
+        $stmt->close();
     }
-
-    $stmt->close();
 }
-
 ?>
+
 
 <!doctype html>
 <html lang="ar">
