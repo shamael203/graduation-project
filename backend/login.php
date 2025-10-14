@@ -2,11 +2,11 @@
 session_start();
 include 'connect.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST["email"];
-    $password = $_POST["password"];
+$message = ""; // لتخزين رسالة الخطأ
 
-    // تأكد ما تطبع شيء قبل header
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = trim($_POST["email"]);
+    $password = $_POST["password"];
 
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
@@ -19,31 +19,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $row["password"])) {
             $_SESSION["user_name"] = $row["name"];
             $_SESSION["user_email"] = $row["email"];
-
             header("Location: welcome.php");
             exit();
         } else {
-            echo "<p style='color:red;'>❌ كلمة المرور غير صحيحة</p>";
+            $message = "<div class='alert error'>❌ كلمة المرور غير صحيحة</div>";
         }
     } else {
-        echo "<p style='color:red;'>❌ البريد الإلكتروني غير موجود</p>";
+        $message = "<div class='alert error'>❌ البريد الإلكتروني غير موجود</div>";
     }
 }
 ?>
 
-
-
-@ -0,0 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - BookSwap</title>
+  <title>تسجيل الدخول - BookSwap</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       font-family: "Tajawal", "Segoe UI", Arial, sans-serif;
-      direction: ltr;
+      direction: rtl;
       background: linear-gradient(135deg, #f0f4ff, #e0ebff);
       color: #333;
       margin: 0;
@@ -132,7 +128,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       text-decoration: underline;
     }
 
-    /* تنسيق رسالة الخطأ */
     .alert {
       padding: 14px 16px;
       border-radius: 10px;
@@ -170,25 +165,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
   <div class="container">
-    <h2>Login</h2>
+    <h2>تسجيل الدخول</h2>
 
-    <?php if (isset($_GET['error']) && $_GET['error'] == '1'): ?>
-      <div class="alert error">❌ Incorrect password</div>
-    <?php elseif (isset($_GET['error']) && $_GET['error'] == '2'): ?>
-      <div class="alert error">❌ Email not found</div>
-    <?php endif; ?>
+    <!-- ✅ عرض الرسائل هنا -->
+    <?php if (!empty($message)) echo $message; ?>
 
-    <form action="login.php" method="POST"  autocomplete="off">
-      <label for="email">Email Address</label>
+    <form action="login.php" method="POST" autocomplete="off">
+      <label for="email">البريد الإلكتروني</label>
       <input type="email" name="email" id="email" required autocomplete="off" />
 
-      <label for="password">Password</label>
+      <label for="password">كلمة المرور</label>
       <input type="password" name="password" id="password" required autocomplete="new-password" />
 
-      <button type="submit">Log In</button>
+      <button type="submit">تسجيل الدخول</button>
 
       <div class="note">
-        Don't have an account? <a href="register.html">Register now</a>
+        ليس لديك حساب؟ <a href="register.php">سجل الآن</a>
       </div>
     </form>
   </div>
