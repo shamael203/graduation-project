@@ -1,15 +1,12 @@
 <?php
 session_start();
-session_unset();
-session_destroy();
-session_start();
 include 'connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    echo "الإيميل المستلم: " . htmlspecialchars($email); // ← اختياري مؤقت
+    // تأكد ما تطبع شيء قبل header
 
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
@@ -21,7 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (password_verify($password, $row["password"])) {
             $_SESSION["user_name"] = $row["name"];
-            $_SESSION["user_email"] = $row["email"]; // ← تأكد إنك تخزن البريد الجديد
+            $_SESSION["user_email"] = $row["email"];
+
             header("Location: welcome.php");
             exit();
         } else {
@@ -32,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 
 
 @ -0,0 +1,160 @@
