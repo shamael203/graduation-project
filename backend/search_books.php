@@ -1,29 +1,6 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <title>قائمة الكتب</title>
-</head>
-<body>
-
-<h2>🔍 البحث عن كتاب</h2>
-<form method="GET" action="books.php">
-    <input type="text" name="search" placeholder="ادخل عنوان الكتاب أو اسم المؤلف" required>
-    <button type="submit">بحث</button>
-</form>
-
-<hr>
-
-<h2>📚 قائمة الكتب</h2>
-
 <?php
-// الاتصال بقاعدة البيانات
-$host = "localhost";
-$user = "root"; // غيّرها إذا كان اسم المستخدم مختلف
-$password = ""; // غيّرها إذا كان فيه كلمة مرور
-$dbname = "book_exchange";
-
-$conn = new mysqli($host, $user, $password, $dbname);
+session_start();
+include 'connect.php';
 
 // التحقق من الاتصال
 if ($conn->connect_error) {
@@ -56,6 +33,3 @@ if ($result->num_rows > 0) {
 
 $conn->close();
 ?>
-
-</body>
-</html>
