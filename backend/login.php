@@ -22,10 +22,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: welcome.php");
             exit();
         } else {
-            $message = "<div class='alert error'>❌ كلمة المرور غير صحيحة</div>";
+            $message = "<div class='alert error'> كلمة المرور او البريد الالكتروني غير صحيحة</div>";
         }
     } else {
-        $message = "<div class='alert error'>❌ البريد الإلكتروني غير موجود</div>";
+       $message = "<div class='alert error'> كلمة المرور او البريد الالكتروني غير صحيحة</div>";
+        
     }
 }
 ?>

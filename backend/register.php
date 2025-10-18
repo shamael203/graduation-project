@@ -176,10 +176,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <input id="name" name="name" type="text" required minlength="2" maxlength="100" placeholder="اكتب اسمك الكامل">
 
       <label for="email">البريد الإلكتروني</label>
-      <input id="email" name="email" type="email" required maxlength="255" placeholder="example@email.com">
+      <input id="email" name="email" type="email" required maxlength="255" placeholder="example@email.com" autocomplete="off">
 
       <label for="password">كلمة المرور</label>
-      <input id="password" name="password" type="password" required minlength="8" placeholder="أدخل كلمة مرور قوية">
+      <input id="password" name="password" type="password" required minlength="8" placeholder="أدخل كلمة مرور قوية" required autocomplete="new-password">
 
       <button type="submit">سجّل الآن</button>
     </form>
