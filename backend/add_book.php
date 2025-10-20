@@ -1,3 +1,5 @@
+<?php include 'db.php'; ?>
+
 <!doctype html>
 <html lang="ar">
 <head>
@@ -65,20 +67,6 @@
       outline: none;
     }
 
-    input[type="file"] {
-      border: 1px dashed #aaa;
-      background-color: #fafafa;
-      cursor: pointer;
-      padding: 12px;
-      text-align: center;
-      transition: background 0.3s;
-    }
-
-    input[type="file"]:hover {
-      background-color: #f0f4ff;
-      border-color: #3f51b5;
-    }
-
     button {
       width: 100%;
       padding: 12px;
@@ -97,7 +85,6 @@
       transform: scale(1.02);
     }
 
-    /* الرسائل (للاستخدام لاحقاً مع PHP أو JS) */
     .alert {
       padding: 12px 15px;
       margin-bottom: 20px;
@@ -134,9 +121,28 @@
 
 <body>
   <div class="container">
-    <h2>إضافة كتاب جديد</h2>
+    <h2>📚 إضافة كتاب جديد</h2>
 
-    <form action="#" method="POST" enctype="multipart/form-data">
+    <!-- رسائل النجاح أو الخطأ -->
+    <?php
+    if (isset($_POST['save'])) {
+      $title = $_POST['title'];
+      $author = $_POST['author'];
+      $edition = $_POST['edition'];
+      $price = $_POST['price'];
+
+      $sql = "INSERT INTO books (title, author, edition, price)
+              VALUES ('$title', '$author', '$edition', '$price')";
+
+      if ($conn->query($sql)) {
+        echo "<div class='alert success'>✅ تم حفظ الكتاب بنجاح!</div>";
+      } else {
+        echo "<div class='alert error'>❌ حدث خطأ: " . $conn->error . "</div>";
+      }
+    }
+    ?>
+
+    <form method="POST">
       <label for="title">عنوان الكتاب</label>
       <input id="title" name="title" type="text" required maxlength="255" placeholder="أدخل عنوان الكتاب">
 
@@ -149,10 +155,7 @@
       <label for="price">السعر (ر.س)</label>
       <input id="price" name="price" type="number" step="0.01" required placeholder="أدخل السعر">
 
-      <label for="image">صورة الغلاف</label>
-      <input id="image" name="image" type="file" accept="image/*">
-
-      <button type="submit">إضافة الكتاب</button>
+      <button type="submit" name="save">💾 حفظ الكتاب</button>
     </form>
   </div>
 </body>
