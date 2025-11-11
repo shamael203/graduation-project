@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- مضيف: localhost
--- وقت الجيل: 08 أكتوبر 2025 الساعة 22:57
+-- وقت الجيل: 18 أكتوبر 2025 الساعة 10:38
 -- إصدار الخادم: 8.0.43
 -- نسخة PHP: 8.2.29
 
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `books` (
-  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `edition` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `price` decimal(10,0) NOT NULL,
   `id` int NOT NULL,
   `title` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
@@ -79,6 +79,24 @@ CREATE TABLE `users` (
   `name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `users`
+--
+
+INSERT INTO `users` (`password`, `created_at`, `id`, `name`, `email`) VALUES
+('$2y$10$zg58cT9rCZ.eb2QA8RrpY.r0KuJlLO.PX4fqRpl19b.UFxpsu5yXS', '2025-10-08 22:58:23', 1, 'Shamael sultan', 'shamaelm2003@gmail.com'),
+('$2y$10$kugFgQZBoqgdPiVLilRnKuzOLUBxEgAH7sO3LGCcHkf98NqaQUb6W', '2025-10-08 22:58:31', 2, '', 'Shamael'),
+('$2y$10$bRw76/x/aLL/sFwbXFTF3e0gvaTSk2XJ//6KhX6ngTAFP0eeEeFHC', '2025-10-10 09:30:31', 7, 'Shamael sultan', 'shamawwelm2003@gmail.com'),
+('$2y$10$xLr52g5JtUwcgb5m6oKwgOG2a4TidsjF9yF4K1j0ZadRbADrwfVkW', '2025-10-10 09:38:26', 8, 'Shamael sultan', 'shamaelrrm2003@gmail.com'),
+('$2y$10$PhMsP.5igCKj3F/5cXz6quljlnxXl4Hk7qqD4OO.hmA05CzBdbplO', '2025-10-10 10:03:07', 9, 'SA', 'shamaelmR2003@gmail.com'),
+('$2y$10$fe4G5Rzj9VXjsglvdjDwIetoVq5ztC88ROqbMdi4mQaR8mCIBnByu', '2025-10-14 07:11:09', 10, 'Shamael sultan', 'ahd12@gmail.com'),
+('$2y$10$XzwjvzixgDMC1TkplPsTje8954VK1aTa4gp8B7p.Sx/x8NPRAc.6O', '2025-10-14 07:20:27', 11, 'Shamael sultan', 'ddff1423@gmail.com'),
+('$2y$10$zl85RuBWBecHawsnvzYKQ.EUwDTRwktTHOhMo8JW71/5cp4PFFYkK', '2025-10-14 07:25:08', 12, 'Shamael sultan', 'jjii1423@gmail.com'),
+('$2y$10$tiZ1wUKYLERUpqYhQLR9TeSe69aMMJuKyQa2BxLgvy.cr4vGdWhTi', '2025-10-14 08:38:36', 13, 'Shamael sultan', '1423@gmail.com'),
+('$2y$10$mOnZv9ur7MaZf4vkeGMM0.8CD7oTQRZXllybRVQDertIZ.UGG.R4q', '2025-10-14 08:49:22', 14, 'Shamael sultan', 'shamael1423@gmail.com'),
+('$2y$10$hM/25WLlgNB773BGEPSUCeAietiuwYftqRZjlokfxSEG0D5V9cjae', '2025-10-15 08:22:59', 15, 'Shamael sultan', 'shama777el1423@gmail.com'),
+('$2y$10$nh/BX15Fm3eSKfgfcoCuLuQzt9CZQWHB4FsYlaqVM3KBsdGe5K5QS', '2025-10-15 08:45:45', 16, 'Shamael sultan', 'shamael45@gmail.com');
 
 --
 -- Indexes for dumped tables
@@ -139,7 +157,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- القيود المفروضة على الجداول الملقاة

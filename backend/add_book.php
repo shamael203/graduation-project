@@ -1,12 +1,13 @@
+<?php include 'db.php'; ?>
+
 <!doctype html>
 <html lang="ar">
 <head>
   <meta charset="utf-8">
-  <title>تسجيل مستخدم - BookSwap</title>
+  <title>إضافة كتاب - BookSwap</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    /* الأساسيات */
     body {
       font-family: "Tajawal", "Segoe UI", Arial, sans-serif;
       direction: rtl;
@@ -20,13 +21,12 @@
       justify-content: center;
     }
 
-    /* الصندوق الرئيسي */
     .container {
       background: #fff;
       padding: 35px 40px;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      max-width: 420px;
+      max-width: 440px;
       width: 100%;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -36,7 +36,6 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
-    /* العنوان */
     h2 {
       text-align: center;
       color: #1a237e;
@@ -44,7 +43,6 @@
       font-size: 1.6rem;
     }
 
-    /* التسميات والحقول */
     label {
       display: block;
       margin-bottom: 6px;
@@ -69,7 +67,6 @@
       outline: none;
     }
 
-    /* الزر */
     button {
       width: 100%;
       padding: 12px;
@@ -88,22 +85,25 @@
       transform: scale(1.02);
     }
 
-    /* تنسيق رسالة البريد المسجل مسبقاً */
     .alert {
-      padding: 14px 16px;
-      border-radius: 10px;
+      padding: 12px 15px;
       margin-bottom: 20px;
-      font-size: 15px;
+      border-radius: 10px;
+      font-weight: 600;
       text-align: center;
-      line-height: 1.6;
-      animation: fadeIn 0.4s ease-in-out;
+      animation: fadeIn 0.4s ease;
     }
 
     .alert.error {
-      background-color: #fdecea;
-      color: #b71c1c;
-      border: 1px solid #f5c6cb;
-      box-shadow: 0 2px 6px rgba(183, 28, 28, 0.15);
+      background: #ffe5e5;
+      color: #b00020;
+      border: 1px solid #f5b7b1;
+    }
+
+    .alert.success {
+      background: #e9f7ef;
+      color: #006400;
+      border: 1px solid #a9dfbf;
     }
 
     @keyframes fadeIn {
@@ -111,7 +111,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* للهواتف */
     @media (max-width: 500px) {
       .container {
         padding: 25px 20px;
@@ -122,25 +121,41 @@
 
 <body>
   <div class="container">
-    <h2>تسجيل مستخدم جديد</h2>
+    <h2>📚 إضافة كتاب جديد</h2>
 
-    <!-- رسالة الخطأ عند تكرار البريد -->
-    <div class="alert error">
-      البريد الإلكتروني الذي أدخلته مسجل مسبقًا.<br>
-      يُرجى استخدام بريد آخر أو تسجيل الدخول مباشرة.
-    </div>
+    <!-- رسائل النجاح أو الخطأ -->
+    <?php
+    if (isset($_POST['save'])) {
+      $title = $_POST['title'];
+      $author = $_POST['author'];
+      $edition = $_POST['edition'];
+      $price = $_POST['price'];
 
-    <form action="register.php" method="POST" novalidate>
-      <label for="name">الاسم</label>
-      <input id="name" name="name" type="text" required minlength="2" maxlength="100" placeholder="اكتب اسمك الكامل">
+      $sql = "INSERT INTO books (title, author, edition, price)
+              VALUES ('$title', '$author', '$edition', '$price')";
 
-      <label for="email">البريد الإلكتروني</label>
-      <input id="email" name="email" type="email" required maxlength="255" placeholder="example@email.com">
+      if ($conn->query($sql)) {
+        echo "<div class='alert success'>✅ تم حفظ الكتاب بنجاح!</div>";
+      } else {
+        echo "<div class='alert error'>❌ حدث خطأ: " . $conn->error . "</div>";
+      }
+    }
+    ?>
 
-      <label for="password">كلمة المرور</label>
-      <input id="password" name="password" type="password" required minlength="8" placeholder="أدخل كلمة مرور قوية">
+    <form method="POST">
+      <label for="title">عنوان الكتاب</label>
+      <input id="title" name="title" type="text" required maxlength="255" placeholder="أدخل عنوان الكتاب">
 
-      <button type="submit">سجّل الآن</button>
+      <label for="author">اسم المؤلف</label>
+      <input id="author" name="author" type="text" required maxlength="255" placeholder="اسم المؤلف">
+
+      <label for="edition">الطبعة</label>
+      <input id="edition" name="edition" type="text" maxlength="100" placeholder="مثلاً: الطبعة الثانية">
+
+      <label for="price">السعر (ر.س)</label>
+      <input id="price" name="price" type="number" step="0.01" required placeholder="أدخل السعر">
+
+      <button type="submit" name="save">💾 حفظ الكتاب</button>
     </form>
   </div>
 </body>
