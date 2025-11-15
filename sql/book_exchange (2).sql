@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- مضيف: localhost
--- وقت الجيل: 18 أكتوبر 2025 الساعة 10:38
+-- وقت الجيل: 15 نوفمبر 2025 الساعة 15:31
 -- إصدار الخادم: 8.0.43
 -- نسخة PHP: 8.2.29
 
@@ -33,8 +33,20 @@ CREATE TABLE `books` (
   `id` int NOT NULL,
   `title` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `author` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `user_id` int NOT NULL
+  `user_id` int NOT NULL,
+  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `books`
+--
+
+INSERT INTO `books` (`edition`, `price`, `id`, `title`, `author`, `user_id`, `image`) VALUES
+('الطبعه الثانية', 60, 1, 'Calculus: Early Transcendentals – James Stewart', 'James Stewart', 1, NULL),
+('الطبعه الثانية', 70, 2, 'Principles of Marketing', 'Philip Kotler, Gary Armstrong', 1, NULL),
+('الطبعه الثانية', 70, 3, 'Principles of Marketing', 'Philip Kotler, Gary Armstrong', 1, NULL),
+('الطبعه الثانية', 70, 4, 'Principles of Marketing', 'Philip Kotler, Gary Armstrong', 1, NULL),
+('الطبعه الثانية', 70, 5, 'Principles of Marketing', 'Philip Kotler, Gary Armstrong', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -96,7 +108,9 @@ INSERT INTO `users` (`password`, `created_at`, `id`, `name`, `email`) VALUES
 ('$2y$10$tiZ1wUKYLERUpqYhQLR9TeSe69aMMJuKyQa2BxLgvy.cr4vGdWhTi', '2025-10-14 08:38:36', 13, 'Shamael sultan', '1423@gmail.com'),
 ('$2y$10$mOnZv9ur7MaZf4vkeGMM0.8CD7oTQRZXllybRVQDertIZ.UGG.R4q', '2025-10-14 08:49:22', 14, 'Shamael sultan', 'shamael1423@gmail.com'),
 ('$2y$10$hM/25WLlgNB773BGEPSUCeAietiuwYftqRZjlokfxSEG0D5V9cjae', '2025-10-15 08:22:59', 15, 'Shamael sultan', 'shama777el1423@gmail.com'),
-('$2y$10$nh/BX15Fm3eSKfgfcoCuLuQzt9CZQWHB4FsYlaqVM3KBsdGe5K5QS', '2025-10-15 08:45:45', 16, 'Shamael sultan', 'shamael45@gmail.com');
+('$2y$10$nh/BX15Fm3eSKfgfcoCuLuQzt9CZQWHB4FsYlaqVM3KBsdGe5K5QS', '2025-10-15 08:45:45', 16, 'Shamael sultan', 'shamael45@gmail.com'),
+('$2y$10$jFZ9bRqRyHE89L56oXzxwuzNqEJYf.sS7ijMQRdoUWS3IX46KE6I.', '2025-11-15 14:43:50', 17, 'Shamael sultan', 'shamaellll1423@gmail.com'),
+('$2y$10$DGFacST0efd.N11VOZO2VuGyyipzLZk5psm5jsgiO/YcGSpRfw0lq', '2025-11-15 15:00:25', 18, 'Shamael sultan', 'sh8@gmail.com');
 
 --
 -- Indexes for dumped tables
@@ -139,7 +153,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -157,7 +171,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- القيود المفروضة على الجداول الملقاة
