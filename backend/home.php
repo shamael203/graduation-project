@@ -30,6 +30,7 @@ if (isset($_GET['search'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BookSwap</title>
+
 <style>
 body { font-family:"Tajawal", Arial, sans-serif; margin:0; padding:0; background:#f0f4ff; direction: rtl; }
 header { background:#3f51b5; color:white; padding:15px 20px; }
@@ -39,7 +40,7 @@ header { background:#3f51b5; color:white; padding:15px 20px; }
 .nav-links li a { color:white; text-decoration:none; padding:5px 10px; border-radius:5px; cursor:pointer; }
 .nav-links li a:hover { background:#283593; }
 
-/* Dropdown المستخدم */
+/* Dropdown */
 .user-dropdown { position: relative; }
 .user-dropdown-content {
     display: none;
@@ -55,41 +56,75 @@ header { background:#3f51b5; color:white; padding:15px 20px; }
     z-index:100;
 }
 .user-dropdown.active .user-dropdown-content { display:block; }
-.user-dropdown-content p { margin:0 0 10px 0; text-align:right; }
-.user-dropdown-content a { display:block; text-decoration:none; color:white; padding:8px; border-radius:5px; text-align:center; background:red; }
-.user-btn { cursor:pointer; color:white; text-decoration:none; padding:5px 10px; border-radius:5px; }
+.user-btn { cursor:pointer; }
 
-/* باقي التصميم */
+/* محتوى رئيسي */
 .main-content { text-align:center; padding:60px 20px; background:#e8eaf6; }
 .main-content h2 { color:#1a237e; font-size:32px; margin-bottom:20px; }
-.main-content p { font-size:18px; max-width:700px; margin:auto; margin-bottom:30px; }
-.buttons a { text-decoration:none; padding:12px 25px; margin:5px; border-radius:8px; font-weight:bold; display:inline-block; }
-.btn { background:#3f51b5; color:white; }
-.search-box { max-width:700px; margin:20px auto; display:flex; }
-.search-box input { flex:1; padding:12px; border-radius:8px 0 0 8px; border:1px solid #c7c7c7; font-size:16px; }
-.search-box button { padding:12px 18px; background:#3f51b5; color:white; border:none; border-radius:0 8px 8px 0; cursor:pointer; font-size:16px; }
-.search-box button:hover { background:#2c3e9a; }
+.buttons a { text-decoration:none; padding:12px 25px; margin:5px; border-radius:8px; display:inline-block; background:#3f51b5; color:white; }
+
+/* 🔍 تصميم شريط البحث الجديد */
+.search-box {
+    max-width: 600px;
+    margin: 30px auto;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 14px 50px 14px 15px;
+    border-radius: 40px;
+    border: 2px solid #b9c4ff;
+    font-size: 17px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-box input:focus {
+    border-color: #3f51b5;
+    box-shadow: 0 0 6px rgba(63,81,181,0.4);
+}
+
+.search-box button {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #3f51b5;
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.search-box button:hover {
+    background:#283593;
+}
+
+/* عرض الكتب */
 .features { max-width:1100px; margin:40px auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px; padding:0 20px; }
 .feature { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); text-align:center; }
-.feature img { width:150px; height:auto; border-radius:8px; margin-bottom:10px; }
-.feature h3 { margin:10px 0 5px 0; color:#1a237e; }
-.feature p { margin:4px 0; }
+.feature img { width:150px; border-radius:8px; }
+
 footer { text-align:center; background:#3f51b5; color:white; padding:15px; margin-top:40px; }
 </style>
 </head>
+
 <body>
 
 <header>
     <nav class="navbar">
         <h1>📚 BookSwap</h1>
         <ul class="nav-links">
-            <li><a href="index.php" class="active">الرئيسية</a></li>
+            <li><a href="index.php">الرئيسية</a></li>
             <li><a href="view_books.php">جميع الكتب</a></li>
 
             <?php if ($username): ?>
             <li><a href="add_book.php">إضافة كتاب</a></li>
             <li class="user-dropdown">
-                <a href="javascript:void(0);" class="user-btn"><?= htmlspecialchars($username) ?> ▼</a>
+                <a class="user-btn"><?= htmlspecialchars($username) ?> ▼</a>
                 <div class="user-dropdown-content">
                     <p><?= htmlspecialchars($user_email) ?></p>
                     <a href="logout.php">تسجيل الخروج</a>
@@ -104,36 +139,34 @@ footer { text-align:center; background:#3f51b5; color:white; padding:15px; margi
 
 <section class="main-content">
     <h2>تبادل الكتب بسهولة</h2>
-    <p>مرحباً بك في <strong>BookSwap</strong> — أسهل طريقة لشراء وبيع كتبك المفضلة. اكتشف مجموعة واسعة من الكتب أو شارك كتبك لتجد لها مالك جديد.</p>
-    <div class="buttons">
-        <a href="view_books.php" class="btn">استعرض الكتب</a>
-    </div>
+    <p>مرحباً بك في <strong>BookSwap</strong>— المكان الأفضل لشراء وبيع كتبك.</p>
 
-    <!-- شريط البحث -->
     <form method="GET" action="index.php" class="search-box">
-        <input type="text" name="search" placeholder="اكتب عنوان الكتاب أو اسم المؤلف..." value="<?= htmlspecialchars($search) ?>">
+        <input type="text" name="search" placeholder="ابحث عن كتاب أو مؤلف..." value="<?= htmlspecialchars($search) ?>">
         <button type="submit">بحث</button>
     </form>
 </section>
 
 <section class="features">
-    <h2 style="grid-column:1/-1; text-align:center; margin-bottom:20px;">أحدث الكتب</h2>
+    <h2 style="grid-column:1/-1; text-align:center;">أحدث الكتب</h2>
 
     <?php if ($books->num_rows > 0): ?>
         <?php while($row = $books->fetch_assoc()): ?>
-            <div class="feature">
-                <?php if (!empty($row['image'])): ?>
-                    <img src="uploads/<?= htmlspecialchars($row['image']) ?>" alt="صورة الكتاب">
-                <?php else: ?>
-                    <img src="uploads/default.png" alt="لا توجد صورة">
-                <?php endif; ?>
-                <h3><?= htmlspecialchars($row['title']) ?></h3>
-                <p>المؤلف: <?= htmlspecialchars($row['author']) ?></p>
-                <p>السعر: <?= htmlspecialchars($row['price']) ?> ر.س</p>
-            </div>
+        <div class="feature">
+            <img src="uploads/<?= htmlspecialchars($row['image'] ?: 'default.png') ?>">
+            <h3><?= htmlspecialchars($row['title']) ?></h3>
+            <p>المؤلف: <?= htmlspecialchars($row['author']) ?></p>
+            <p>السعر: <?= htmlspecialchars($row['price']) ?> ر.س</p>
+
+            <a href="cart.php?id=<?= $row['id'] ?>" style="text-decoration:none;">
+                <button style="background:#3f51b5; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer;">
+                    إضافة إلى السلة 🛒
+                </button>
+            </a>
+        </div>
         <?php endwhile; ?>
     <?php else: ?>
-        <p style="grid-column:1/-1; text-align:center;">لا توجد كتب حالياً.</p>
+        <p style="grid-column:1/-1; text-align:center;">لا توجد نتائج.</p>
     <?php endif; ?>
 </section>
 
@@ -143,18 +176,15 @@ footer { text-align:center; background:#3f51b5; color:white; padding:15px; margi
 
 <script>
 const userBtn = document.querySelector('.user-btn');
-const userDropdown = document.querySelector('.user-dropdown');
+const dropdown = document.querySelector('.user-dropdown');
 
 if(userBtn){
     userBtn.addEventListener('click', () => {
-        userDropdown.classList.toggle('active');
+        dropdown.classList.toggle('active');
     });
 
-    // لإغلاق القائمة عند الضغط خارجها
-    document.addEventListener('click', function(event) {
-        if (!userDropdown.contains(event.target)) {
-            userDropdown.classList.remove('active');
-        }
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) dropdown.classList.remove('active');
     });
 }
 </script>
