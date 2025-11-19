@@ -4,7 +4,7 @@ session_unset();
 session_destroy();
 
 // تحويل تلقائي بعد 3 ثواني
-header("refresh:3;url=login.php");
+header("refresh:3;url=home.php");
 ?>
 
 <!DOCTYPE html>
@@ -49,7 +49,6 @@ header("refresh:3;url=login.php");
 <body>
 
   <p>تم تسجيل خروجك بنجاح</p>
-  <p>سيتم تحويلك لصفحة تسجيل الدخول<span class="dots"></span></p>
-
+ 
 </body>
 </html>

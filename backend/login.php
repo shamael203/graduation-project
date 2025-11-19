@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $row["password"])) {
             $_SESSION["user_name"] = $row["name"];
             $_SESSION["user_email"] = $row["email"];
-            header("Location: welcome.php");
+            header("Location: home.php");
             exit();
         } else {
             $message = "<div class='alert error'> كلمة المرور او البريد الالكتروني غير صحيحة</div>";
