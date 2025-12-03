@@ -154,7 +154,13 @@ footer { text-align:center; background:#3f51b5; color:white; padding:15px; margi
         <?php while($row = $books->fetch_assoc()): ?>
         <div class="feature">
             <img src="uploads/<?= htmlspecialchars($row['image'] ?: 'default.png') ?>">
-            <h3><?= htmlspecialchars($row['title']) ?></h3>
+            <h3>
+                <h3>
+    <a href="book_details.php?id=<?= $row['id'] ?>" style="text-decoration:none; color:#1a237e;">
+        <?= htmlspecialchars($row['title']) ?>
+    </a>
+</h3>
+
             <p>المؤلف: <?= htmlspecialchars($row['author']) ?></p>
             <p>السعر: <?= htmlspecialchars($row['price']) ?> ر.س</p>
 
