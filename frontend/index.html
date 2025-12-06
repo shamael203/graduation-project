@@ -54,5 +54,79 @@
     <p>© 2025 Book Exchange. All rights reserved.</p>
   </footer>
 
+<!-- Message Modal -->
+<div id="messageModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+
+    <h2>Send a Message to the Seller</h2>
+
+    <form id="messageForm">
+      <input type="hidden" id="bookTitle">
+
+      <label>Book:</label>
+      <input type="text" id="bookNameDisplay" disabled>
+
+      <label>Your Name:</label>
+      <input type="text" id="buyerName" placeholder="Enter your name" required>
+
+      <label>Your Email:</label>
+      <input type="email" id="buyerEmail" placeholder="Enter your email" required>
+
+      <label>Message:</label>
+      <textarea id="buyerMessage" placeholder="Write your message..." required></textarea>
+
+      <button type="submit">Send Message</button>
+    </form>
+  </div>
+</div>
+<script>
+const modal = document.getElementById("messageModal");
+const closeBtn = document.querySelector(".close");
+
+function openMessageModal(bookTitle) {
+  modal.style.display = "block";
+  document.getElementById("bookTitle").value = bookTitle;
+  document.getElementById("bookNameDisplay").value = bookTitle;
+}
+
+closeBtn.onclick = () => modal.style.display = "none";
+window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+document.getElementById("messageForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const data = {
+    book: document.getElementById("bookTitle").value,
+    name: document.getElementById("buyerName").value,
+    email: document.getElementById("buyerEmail").value,
+    message: document.getElementById("buyerMessage").value
+  };
+
+  console.log("Message Sent:", data);
+
+  alert("Your message has been sent!");
+  modal.style.display = "none";
+});
+</script>
+<div class="message-bar">
+
+</div>
+<script>
+  function openChat() {
+    window.location.href = 'chat.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(btn => {
+      if (btn.textContent.trim() === 'Message Seller') {
+        btn.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+
 </body>
 </html>

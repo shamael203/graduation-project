@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat with the Seller</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f5f7;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      min-height: 100vh;
+    }
+
+    .chat-container {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      overflow: hidden;
+      margin: 16px;
+    }
+
+    .chat-header {
+      background-color: #007bff;
+      color: #ffffff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .back-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .chat-window {
+      padding: 16px;
+      background-color: #f4f5f7;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      max-width: 80%;
+    }
+
+    .message.seller {
+      align-self: flex-start;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .message.seller .bubble {
+      background-color: #ffffff;
+      border: 1px solid #dde1e7;
+    }
+
+    .message.user .bubble {
+      background-color: #007bff;
+      color: #ffffff;
+    }
+
+    .time {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #dde1e7;
+      padding: 10px;
+      background-color: #ffffff;
+      gap: 8px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid #ccd0d5;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .chat-input button {
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: none;
+      background-color: #007bff;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .chat-input button:hover {
+      background-color: #005fd1;
+    }
+
+    @media (max-width: 600px) {
+      .chat-container {
+        margin: 0;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <header class="chat-header">
+      <div class="chat-header-title">Chat with the Seller</div>
+      <a href="index.html" class="back-link">← Back</a>
+    </header>
+
+    <div class="chat-window">
+  
+      <div class="message seller">
+        <div class="bubble">Hello! How can I help you with this book?</div>
+        <div class="time">Seller • 10:30</div>
+      </div>
+      <div class="message user">
+        <div class="bubble">Hi, is the book still available?</div>
+        <div class="time">You • 10:31</div>
+      </div>
+    </div>
+
+    <form class="chat-input" onsubmit="sendMessage(event)">
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Type your message..."
+        autocomplete="off"
+        required
+      />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    function sendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatWindow = document.querySelector('.chat-window');
+
+      const msg = document.createElement('div');
+      msg.className = 'message user';
+      msg.innerHTML = `
+        <div class="bubble">${text}</div>
+        <div class="time">You • just now</div>
+      `;
+      chatWindow.appendChild(msg);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      input.value = '';
+    }
+  </script>
+</body>
+</html>
