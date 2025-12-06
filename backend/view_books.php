@@ -2,9 +2,49 @@
 session_start();
 include "connect.php";
 
-// جلب اسم المستخدم والبريد إذا سجل الدخول
+// معلومات المستخدم
 $username = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : null;
 $user_email = isset($_SESSION['user_email']) ? $_SESSION['user_email'] : null;
+$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1;
+
+// معالجة إضافة للسلة
+if (isset($_POST['add_to_cart'])) {
+    $book_id = intval($_POST['book_id']);
+    $quantity = 1;
+
+    // تأكد أن الكتاب موجود فعلاً
+    $stmt = $conn->prepare("SELECT id FROM books WHERE id=?");
+    $stmt->bind_param("i", $book_id);
+    $stmt->execute();
+    $exists = $stmt->get_result();
+    if ($exists->num_rows === 0) {
+        // لو الكتاب غير موجود، ارجعي للقائمة
+        header("Location: view_books.php");
+        exit;
+    }
+
+    // هل الكتاب موجود مسبقاً في السلة؟
+    $stmt = $conn->prepare("SELECT id FROM cart WHERE user_id=? AND book_id=?");
+    $stmt->bind_param("ii", $user_id, $book_id);
+    $stmt->execute();
+    $resultCheck = $stmt->get_result();
+
+    if ($resultCheck->num_rows > 0) {
+        $row = $resultCheck->fetch_assoc();
+        $cart_id = $row['id'];
+        $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + 1 WHERE id=?");
+        $stmt->bind_param("i", $cart_id);
+        $stmt->execute();
+    } else {
+        $stmt = $conn->prepare("INSERT INTO cart (user_id, book_id, quantity) VALUES (?, ?, ?)");
+        $stmt->bind_param("iii", $user_id, $book_id, $quantity);
+        $stmt->execute();
+    }
+
+    // منع إعادة الإرسال
+    header("Location: view_books.php");
+    exit;
+}
 
 // التعامل مع البحث
 $search = "";
@@ -19,7 +59,6 @@ if (isset($_GET['search'])) {
     $result = $conn->query("SELECT * FROM books ORDER BY id DESC");
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -28,7 +67,6 @@ if (isset($_GET['search'])) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body { font-family:"Tajawal", Arial, sans-serif; background:#f0f4ff; margin:0; padding:0; direction:rtl; }
-
 /* الهيدر */
 header { background:#3f51b5; color:white; padding:15px 20px; position: sticky; top:0; z-index:100; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
 .navbar { display:flex; justify-content: space-between; align-items:center; }
@@ -107,11 +145,11 @@ h2 { color:#1a237e; text-align:center; margin-bottom:20px; }
 
     <!-- الكتب -->
     <div class="books-grid">
-    <?php if ($result->num_rows > 0): ?>
+    <?php if ($result && $result->num_rows > 0): ?>
         <?php while($row = $result->fetch_assoc()): ?>
             <?php $imageFile = !empty($row['image']) ? "uploads/" . $row['image'] : "uploads/default.png"; ?>
             <div class="book">
-                <img src="<?= htmlspecialchars($imageFile) ?>" alt="صورة الكتاب">
+                <img src="<?= htmlspecialchars($imageFile)?>" alt="صورة الكتاب">
                 <div class="book-info">
                     <h3>📖 <?= htmlspecialchars($row['title']) ?></h3>
                     <p>المؤلف: <?= htmlspecialchars($row['author']) ?></p>
@@ -119,7 +157,12 @@ h2 { color:#1a237e; text-align:center; margin-bottom:20px; }
                         <p>الطبعة: <?= htmlspecialchars($row['edition']) ?></p>
                     <?php endif; ?>
                     <p class="price">السعر: <?= htmlspecialchars($row['price']) ?> ر.س</p>
-                    <button>إضافة إلى السلة</button>
+
+                    <!-- نموذج إضافة للسلة -->
+                    <form method="POST" action="view_books.php">
+                        <input type="hidden" name="book_id" value="<?= (int)$row['id'] ?>">
+                        <button type="submit" name="add_to_cart">إضافة إلى السلة</button>
+                    </form>
                 </div>
             </div>
         <?php endwhile; ?>

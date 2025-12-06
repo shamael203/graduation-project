@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- مضيف: localhost
--- وقت الجيل: 15 نوفمبر 2025 الساعة 15:31
+-- وقت الجيل: 06 ديسمبر 2025 الساعة 21:53
 -- إصدار الخادم: 8.0.43
 -- نسخة PHP: 8.2.29
 
@@ -31,7 +31,7 @@ CREATE TABLE `books` (
   `edition` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `price` decimal(10,0) NOT NULL,
   `id` int NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `title` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `author` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` int NOT NULL,
   `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
@@ -42,11 +42,27 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`edition`, `price`, `id`, `title`, `author`, `user_id`, `image`) VALUES
-('الطبعه الثانية', 60, 1, 'Calculus: Early Transcendentals – James Stewart', 'James Stewart', 1, NULL),
-('الطبعه الثانية', 70, 2, 'Principles of Marketing', 'Philip Kotler, Gary Armstrong', 1, NULL),
-('الطبعه الثانية', 70, 3, 'Principles of Marketing', 'Philip Kotler, Gary Armstrong', 1, NULL),
-('الطبعه الثانية', 70, 4, 'Principles of Marketing', 'Philip Kotler, Gary Armstrong', 1, NULL),
-('الطبعه الثانية', 70, 5, 'Principles of Marketing', 'Philip Kotler, Gary Armstrong', 1, NULL);
+('الطبعه الثانية', 99, 19, 'عصر التنقيب في البيانات عبر تقنيات الذكاء الاصطناعي التطور – التحديات الفنية والقانونية – العيوب خوارزمية الذكاء الاصطناعي دراسة مقارنة', ' احمد حسين علي', 14, '1765048450_3ea13b05-6e1a-4de8-a80e-1c3849436b98-thumbnail-1000x1000-70.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `cart`
+--
+
+CREATE TABLE `cart` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `book_id` int NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `cart`
+--
+
+INSERT INTO `cart` (`id`, `user_id`, `book_id`, `quantity`) VALUES
+(1, 14, 19, 1);
 
 -- --------------------------------------------------------
 
@@ -59,7 +75,48 @@ CREATE TABLE `messages` (
   `sender_id` int NOT NULL,
   `receiver_id` int NOT NULL,
   `message` text COLLATE utf8mb4_general_ci NOT NULL,
-  `sent_at` timestamp NOT NULL
+  `date` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `book_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `orders`
+--
+
+CREATE TABLE `orders` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `address` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `payment_method` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `name`, `email`, `address`, `payment_method`, `total_amount`, `created_at`) VALUES
+(1, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:50:17'),
+(2, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:51:15'),
+(3, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:51:18');
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `id` int NOT NULL,
+  `order_id` int NOT NULL,
+  `book_id` int NOT NULL,
+  `quantity` int NOT NULL,
+  `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -77,6 +134,27 @@ CREATE TABLE `payments` (
   `payment_method` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `profile`
+--
+
+CREATE TABLE `profile` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `bio` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `phone` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `avatar` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `profile`
+--
+
+INSERT INTO `profile` (`id`, `user_id`, `bio`, `phone`, `avatar`) VALUES
+(1, 14, '', '0536910118', 'uploads/avatar_14_1765048303.png');
 
 -- --------------------------------------------------------
 
@@ -124,6 +202,14 @@ ALTER TABLE `books`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- فهارس للجدول `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `book_id` (`book_id`);
+
+--
 -- فهارس للجدول `messages`
 --
 ALTER TABLE `messages`
@@ -132,9 +218,30 @@ ALTER TABLE `messages`
   ADD KEY `receiver_id` (`receiver_id`);
 
 --
+-- فهارس للجدول `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- فهارس للجدول `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `book_id` (`book_id`);
+
+--
 -- فهارس للجدول `payments`
 --
 ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- فهارس للجدول `profile`
+--
+ALTER TABLE `profile`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
@@ -153,7 +260,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -162,10 +275,28 @@ ALTER TABLE `messages`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `profile`
+--
+ALTER TABLE `profile`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -184,6 +315,13 @@ ALTER TABLE `books`
   ADD CONSTRAINT `fk_books_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
+-- قيود الجداول `cart`
+--
+ALTER TABLE `cart`
+  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE;
+
+--
 -- قيود الجداول `messages`
 --
 ALTER TABLE `messages`
@@ -191,10 +329,23 @@ ALTER TABLE `messages`
   ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
+-- قيود الجداول `order_items`
+--
+ALTER TABLE `order_items`
+  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`);
+
+--
 -- قيود الجداول `payments`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- قيود الجداول `profile`
+--
+ALTER TABLE `profile`
+  ADD CONSTRAINT `profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
