@@ -17,7 +17,7 @@ $user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 // جلب معلومات البروفايل
-$stmt2 = $conn->prepare("SELECT bio, phone, avatar FROM profiles WHERE user_id = ?");
+$stmt2 = $conn->prepare("SELECT bio, phone, avatar FROM  profile  WHERE user_id = ?");
 $stmt2->bind_param("i", $user_id);
 $stmt2->execute();
 $profile = $stmt2->get_result()->fetch_assoc();

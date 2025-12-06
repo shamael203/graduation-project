@@ -15,7 +15,7 @@ if (!is_dir($uploadDir)) {
 }
 
 // جلب البيانات الحالية
-$stmt = $conn->prepare("SELECT bio, phone, avatar FROM profiles WHERE user_id = ?");
+$stmt = $conn->prepare("SELECT bio, phone, avatar FROM profile WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $profile = $stmt->get_result()->fetch_assoc();
@@ -47,17 +47,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($errors)) {
 
         // هل الملف موجود سابقاً؟
-        $check = $conn->prepare("SELECT user_id FROM profiles WHERE user_id = ?");
+        $check = $conn->prepare("SELECT user_id FROM profile WHERE user_id = ?");
         $check->bind_param("i", $user_id);
         $check->execute();
         $exists = $check->get_result()->num_rows > 0;
         $check->close();
 
         if ($exists) {
-            $stmt = $conn->prepare("UPDATE profiles SET bio=?, phone=?, avatar=? WHERE user_id=?");
+            $stmt = $conn->prepare("UPDATE profile SET bio=?, phone=?, avatar=? WHERE user_id=?");
             $stmt->bind_param("sssi", $bio, $phone, $avatarPath, $user_id);
         } else {
-            $stmt = $conn->prepare("INSERT INTO profiles (bio, phone, avatar, user_id) VALUES (?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO profile (bio, phone, avatar, user_id) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("sssi", $bio, $phone, $avatarPath, $user_id);
         }
 
