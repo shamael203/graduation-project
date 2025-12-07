@@ -50,8 +50,14 @@ echo "<p>Price: " . htmlspecialchars($book['price']) . "</p>";
 // نفترض عندك عمود user_id لصاحب الكتاب
 $seller_id = isset($book['user_id']) ? $book['user_id'] : 1;
 ?>
+<h3>Send a message to the seller</h3>
 
-<a href="chat.php?user=<?=$seller_id?>" 
-   style='padding:10px; background:#007bff; color:white; text-decoration:none; border-radius:5px;'>
-   تواصل مع مالك الكتاب
-</a>
+<form action="send_message.php" method="post">
+    <input type="hidden" name="book_id" value="<?php echo $book_id; ?>">
+    <input type="hidden" name="receiver_id" value="<?php echo $seller_id; ?>">
+
+    <label for="message">Message:</label><br>
+    <textarea name="message" id="message" rows="4" cols="50" required></textarea><br><br>
+
+    <button type="submit" name="send">Send</button>
+</form>
