@@ -2,7 +2,10 @@
 session_start();
 include "connect.php"; // الاتصال بقاعدة البيانات
 
-$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1;
+if(!isset($_SESSION['user_id'])){
+    die("You must log in first");
+}
+$user_id = $_SESSION['user_id'];
 $message = "";
 
 if (isset($_POST['save'])) {

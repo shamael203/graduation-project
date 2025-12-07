@@ -28,6 +28,12 @@ $avatar = "uploads/default-avatar.png";
 if (!empty($profile["avatar"]) && file_exists($profile["avatar"])) {
     $avatar = $profile["avatar"];
 }
+// جلب كتب المستخدم
+$stmt3 = $conn->prepare("SELECT title, author, edition, price, image FROM books WHERE user_id = ?");
+$stmt3->bind_param("i", $user_id);
+$stmt3->execute();
+$books = $stmt3->get_result();
+$stmt3->close();
 ?>
 <!DOCTYPE html>
 <html lang="ar">
@@ -55,6 +61,21 @@ img { width: 150px; height:150px; border-radius: 8px; object-fit: cover; }
 
     <br>
     <a class="button" href="edit_profile.php">تعديل البروفايل</a>
+    <hr>
+    <h3>📚 كتبي</h3>
+<?php while($book = $books->fetch_assoc()): ?>
+    <div style="margin-bottom:20px;">
+        <?php if(!empty($book['image'])): ?>
+            <img src="uploads/<?= $book['image'] ?>" style="width:100px; height:140px; border-radius:6px;">
+        <?php endif; ?>
+
+        <p><strong>العنوان:</strong> <?= $book['title'] ?></p>
+        <p><strong>المؤلف:</strong> <?= $book['author'] ?></p>
+        <p><strong>الطبعة:</strong> <?= $book['edition'] ?></p>
+        <p><strong>السعر:</strong> <?= $book['price'] ?> ر.س</p>
+        <hr>
+    </div>
+<?php endwhile; ?>
 </div>
 
 </body>
