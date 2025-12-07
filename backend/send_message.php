@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php';
+include 'connect.php';
 
 if (!isset($_SESSION['user_id'])) {
     die("You must be logged in.");

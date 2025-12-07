@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'connect.php';
+include 'connect.php';
 if (empty($_SESSION['user_id'])) { header('Location: login.php'); exit; }
 $me = (int) $_SESSION['user_id'];
 
