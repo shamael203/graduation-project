@@ -166,7 +166,7 @@ footer { text-align:center; background:#3f51b5; color:white; padding:15px; margi
                             <i class="fas fa-envelope"></i> <?= htmlspecialchars($user_email) ?>
                         </p>
                         <a href="profile.php"><i class="fas fa-id-card"></i> الملف الشخصي</a>
-                        <a href="messages.php"><i class="fas fa-comments"></i> الرسائل</a>
+                        <a href="chat.php"><i class="fas fa-comments"></i> الرسائل</a>
                         <a href="cart.php"><i class="fas fa-shopping-cart"></i> السلة</a>
                         <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
                     </div>
