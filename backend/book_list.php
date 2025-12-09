@@ -1,6 +1,6 @@
 <?php
 // الاتصال بقاعدة البيانات
-include 'db.php';
+include 'connect.php';
 
 // جلب جميع الكتب من قاعدة البيانات
 $sql = "SELECT * FROM books";
@@ -32,6 +32,14 @@ $result = $conn->query($sql);
             text-align: center;
             margin-top: 30px;
         }
+        a.book-link {
+            color: #1a237e;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a.book-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -48,20 +56,19 @@ $result = $conn->query($sql);
 
     <?php
     if ($result->num_rows > 0) {
-        // عرض كل كتاب
         while($row = $result->fetch_assoc()) {
             echo "<tr>";
-            echo "<td>" . $row['title'] . "</td>";
-            echo "<td>" . $row['author'] . "</td>";
-            echo "<td>" . $row['edition'] . "</td>";
-            echo "<td>" . $row['price'] . " ريال</td>";
+            // العنوان كرابط يفتح صفحة التفاصيل
+            echo "<td><a class='book-link' href='book_details.php?id=" . (int)$row['id'] . "'>" . htmlspecialchars($row['title']) . "</a></td>";
+            echo "<td>" . htmlspecialchars($row['author']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['edition']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['price']) . " ﷼</td>";
             echo "</tr>";
         }
     } else {
         echo "<tr><td colspan='4'>لا توجد كتب حالياً</td></tr>";
     }
     ?>
-
 </table>
 
 </body>

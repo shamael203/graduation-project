@@ -32,31 +32,33 @@ if ($user_id) {
     $messages = $msg_stmt->get_result();
 }
 
-// إضافة للسلة (تعمل بدون تسجيل دخول)
+// إضافة للسلة (تعمل مع المسجل دخوله أو غير المسجل)
 if (isset($_POST['add_to_cart'])) {
     $book_id = intval($_POST['book_id']);
     $quantity = 1;
 
     if ($user_id) {
-        // حفظ في قاعدة البيانات
+        // المستخدم مسجل دخول → نخزن في قاعدة البيانات
         $stmt = $conn->prepare("SELECT id FROM cart WHERE user_id=? AND book_id=?");
         $stmt->bind_param("ii", $user_id, $book_id);
         $stmt->execute();
         $exists = $stmt->get_result();
 
         if ($exists->num_rows > 0) {
+            // إذا الكتاب موجود مسبقاً → نزيد الكمية
             $row = $exists->fetch_assoc();
             $cart_id = $row['id'];
             $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + 1 WHERE id=?");
             $stmt->bind_param("i", $cart_id);
             $stmt->execute();
         } else {
+            // إذا الكتاب جديد → ندخله في السلة
             $stmt = $conn->prepare("INSERT INTO cart (user_id, book_id, quantity) VALUES (?, ?, ?)");
             $stmt->bind_param("iii", $user_id, $book_id, $quantity);
             $stmt->execute();
         }
     } else {
-        // حفظ في Session
+        // المستخدم غير مسجل دخول → نخزن في Session
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
         }
@@ -67,7 +69,8 @@ if (isset($_POST['add_to_cart'])) {
         }
     }
 
-    header("Location: index.php");
+    // التحويل بعد الإضافة
+    header("Location: cart.php");
     exit;
 }
 ?>
@@ -166,7 +169,10 @@ footer { text-align:center; background:#3f51b5; color:white; padding:15px; margi
                             <i class="fas fa-envelope"></i> <?= htmlspecialchars($user_email) ?>
                         </p>
                         <a href="profile.php"><i class="fas fa-id-card"></i> الملف الشخصي</a>
-                        <a href="chat.php"><i class="fas fa-comments"></i> الرسائل</a>
+                      <a href="chat.php?receiver_id=<?= (int)$user_id ?>">
+    <i class="fas fa-comments"></i> الرسائل
+</a>
+
                         <a href="cart.php"><i class="fas fa-shopping-cart"></i> السلة</a>
                         <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
                     </div>
@@ -190,24 +196,6 @@ footer { text-align:center; background:#3f51b5; color:white; padding:15px; margi
         <button type="submit">بحث</button>
     </form>
 </section>
-
-<?php if ($user_id): ?>
-<div class="messages-box">
-    <h3>📩 آخر رسائلك</h3>
-    <?php if ($messages->num_rows == 0): ?>
-        <p>لا توجد رسائل.</p>
-    <?php else: ?>
-        <?php while($msg = $messages->fetch_assoc()): ?>
-            <div class="msg-item">
-                <strong><?= htmlspecialchars($msg['message']) ?></strong><br>
-                <small><?= htmlspecialchars($msg['date']) ?></small>
-            </div>
-        <?php endwhile; ?>
-    <?php endif; ?>
-    <a href="messages.php" style="color:#3f51b5;">عرض جميع الرسائل →</a>
-</div>
-<?php endif; ?>
-
 <section class="features">
     <h2 style="grid-column:1/-1; text-align:center;">أحدث الكتب</h2>
 
@@ -267,4 +255,4 @@ if (dropdown && userBtn) {
 </script>
 
 </body>
-</html>
+</html> 

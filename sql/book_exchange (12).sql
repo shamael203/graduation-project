@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- مضيف: localhost
--- وقت الجيل: 06 ديسمبر 2025 الساعة 21:53
+-- وقت الجيل: 08 ديسمبر 2025 الساعة 22:17
 -- إصدار الخادم: 8.0.43
 -- نسخة PHP: 8.2.29
 
@@ -34,15 +34,18 @@ CREATE TABLE `books` (
   `title` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `author` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` int NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
+  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `category` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- إرجاع أو استيراد بيانات الجدول `books`
 --
 
-INSERT INTO `books` (`edition`, `price`, `id`, `title`, `author`, `user_id`, `image`) VALUES
-('الطبعه الثانية', 99, 19, 'عصر التنقيب في البيانات عبر تقنيات الذكاء الاصطناعي التطور – التحديات الفنية والقانونية – العيوب خوارزمية الذكاء الاصطناعي دراسة مقارنة', ' احمد حسين علي', 14, '1765048450_3ea13b05-6e1a-4de8-a80e-1c3849436b98-thumbnail-1000x1000-70.jpg');
+INSERT INTO `books` (`edition`, `price`, `id`, `title`, `author`, `user_id`, `image`, `category`) VALUES
+('الطبعه الثانية', 99, 19, 'عصر التنقيب في البيانات عبر تقنيات الذكاء الاصطناعي التطور – التحديات الفنية والقانونية – العيوب خوارزمية الذكاء الاصطناعي دراسة مقارنة', ' احمد حسين علي', 14, '1765048450_3ea13b05-6e1a-4de8-a80e-1c3849436b98-thumbnail-1000x1000-70.jpg', NULL),
+('الطبعة الأولى', 99, 20, 'عصر التنقيب في البيانات', 'أحمد حسين علي', 1, 'ai.jpg', 'تقنية'),
+('الطبعه الثانية', 77, 21, 'علوم الحاسب الالي و المعلومات المدخل إلى البرمجة الخطية وتطبيقاتها في الإدارة', 'خالد موسى الطاسان', 14, '1765230460_1444.png', NULL);
 
 -- --------------------------------------------------------
 
@@ -62,7 +65,7 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`id`, `user_id`, `book_id`, `quantity`) VALUES
-(1, 14, 19, 1);
+(3, 1, 19, 1);
 
 -- --------------------------------------------------------
 
@@ -78,6 +81,16 @@ CREATE TABLE `messages` (
   `date` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   `book_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `messages`
+--
+
+INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `date`, `book_id`) VALUES
+(1, 14, 14, 'gt', '2025-12-07 23:01:17', 19),
+(2, 14, 14, 'www', '2025-12-07 23:01:20', 19),
+(3, 14, 14, 'z', '2025-12-07 23:05:30', 19),
+(4, 14, 14, 'ي', '2025-12-09 00:10:26', 19);
 
 -- --------------------------------------------------------
 
@@ -103,7 +116,9 @@ CREATE TABLE `orders` (
 INSERT INTO `orders` (`id`, `user_id`, `name`, `email`, `address`, `payment_method`, `total_amount`, `created_at`) VALUES
 (1, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:50:17'),
 (2, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:51:15'),
-(3, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:51:18');
+(3, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:51:18'),
+(4, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:53:34'),
+(5, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 22:17:57');
 
 -- --------------------------------------------------------
 
@@ -118,6 +133,14 @@ CREATE TABLE `order_items` (
   `quantity` int NOT NULL,
   `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `book_id`, `quantity`, `price`) VALUES
+(1, 4, 19, 1, 99.00),
+(2, 5, 19, 1, 99.00);
 
 -- --------------------------------------------------------
 
@@ -155,6 +178,29 @@ CREATE TABLE `profile` (
 
 INSERT INTO `profile` (`id`, `user_id`, `bio`, `phone`, `avatar`) VALUES
 (1, 14, '', '0536910118', 'uploads/avatar_14_1765048303.png');
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `suggested`
+--
+
+CREATE TABLE `suggested` (
+  `id` int NOT NULL,
+  `book_id` int NOT NULL,
+  `suggested_book_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `suggested`
+--
+
+INSERT INTO `suggested` (`id`, `book_id`, `suggested_book_id`) VALUES
+(3, 19, 20),
+(4, 19, 21),
+(5, 20, 19),
+(6, 20, 21),
+(7, 21, 19);
 
 -- --------------------------------------------------------
 
@@ -246,6 +292,14 @@ ALTER TABLE `profile`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- فهارس للجدول `suggested`
+--
+ALTER TABLE `suggested`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `book_id` (`book_id`),
+  ADD KEY `suggested_book_id` (`suggested_book_id`);
+
+--
 -- فهارس للجدول `users`
 --
 ALTER TABLE `users`
@@ -260,31 +314,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -297,6 +351,12 @@ ALTER TABLE `payments`
 --
 ALTER TABLE `profile`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `suggested`
+--
+ALTER TABLE `suggested`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -346,17 +406,15 @@ ALTER TABLE `payments`
 --
 ALTER TABLE `profile`
   ADD CONSTRAINT `profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- قيود الجداول `suggested`
+--
+ALTER TABLE `suggested`
+  ADD CONSTRAINT `suggested_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `suggested_ibfk_2` FOREIGN KEY (`suggested_book_id`) REFERENCES `books` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-CREATE TABLE books (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    edition VARCHAR(100) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    user_id INT
-);
