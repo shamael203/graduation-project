@@ -1,12 +1,8 @@
 <?php
 session_start();
 include 'connect.php';
-
-if (empty($_SESSION['user_id'])) { 
-    header('Location: login.php'); 
-    exit; 
-}
-
+include 'header.php'; // الهيدر الموحد
+// الكود الحالي للدردشة يبقى كما هو
 $me = (int) $_SESSION['user_id'];
 $other = isset($_GET['user']) ? (int) $_GET['user'] : 0;
 $book_id = isset($_GET['book']) ? (int) $_GET['book'] : null;
@@ -47,8 +43,9 @@ $stmt2->execute();
 $otherUser = $stmt2->get_result()->fetch_assoc();
 $stmt2->close();
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <title>Chat with <?= htmlspecialchars($otherUser['name']) ?></title>
@@ -60,6 +57,7 @@ $stmt2->close();
       justify-content: center;
       min-height: 100vh;
       margin: 0;
+      direction: rtl;
     }
     .chat-container {
       background-color: #ffffff;
@@ -158,7 +156,8 @@ $stmt2->close();
   </style>
 </head>
 <body>
-  <div class="chat-container">
+
+<div class="chat-container">
     <header class="chat-header">
       <div class="chat-header-title">Chat with <?= htmlspecialchars($otherUser['name']) ?></div>
       <a href="home.php" class="back-link">← Back</a>
@@ -184,15 +183,12 @@ $stmt2->close();
     </div>
 
     <form class="chat-input" method="post">
-      <input
-        type="text"
-        name="msg"
-        placeholder="Type your message..."
-        autocomplete="off"
-        required
-      />
+      <input type="text" name="msg" placeholder="Type your message..." autocomplete="off" required />
       <button type="submit">Send</button>
     </form>
-  </div>
+</div>
+
+<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
+
 </body>
 </html>

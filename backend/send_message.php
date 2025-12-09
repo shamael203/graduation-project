@@ -2,6 +2,9 @@
 session_start();
 include 'connect.php';
 
+// تضمين الهيدر
+include 'header.php';
+
 if (!isset($_SESSION['user_id'])) {
     die("You must be logged in.");
 }
@@ -39,4 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send'])) {
 } else {
     echo "Invalid request.";
 }
+
+// تضمين الفوتر
+include 'footer.php';
 ?>

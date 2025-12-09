@@ -66,6 +66,9 @@ button:hover { background:#2c3e9a; }
 </style>
 </head>
 <body>
+
+<?php include 'header.php'; ?>
+
 <div class="container">
   <h2>📚 إضافة كتاب جديد</h2>
   <?php echo $message; ?>
@@ -88,5 +91,8 @@ button:hover { background:#2c3e9a; }
     <button type="submit" name="save">💾 حفظ الكتاب</button>
   </form>
 </div>
+
+<?php include 'footer.php'; ?>
+
 </body>
 </html>

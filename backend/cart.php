@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'connect.php';
+include 'header.php'; // الهيدر الموحد
 
 $user_id = $_SESSION['user_id'] ?? 1;
 
@@ -31,38 +32,6 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-<meta charset="UTF-8">
-<title>🛒 سلة المشتريات</title>
-<style>
-body { font-family:"Tajawal", sans-serif; background:#f9f9f9; margin:0; padding:0; direction:rtl;}
-.container { max-width:1200px; margin:40px auto; padding:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius:10px; display:flex; gap:30px; flex-wrap:wrap;}
-.products, .invoice { flex:1; min-width:300px;}
-h2, h3 { color:#3f51b5; text-align:center; margin-bottom:20px;}
-.cart-item { display:flex; gap:15px; margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:15px;}
-.cart-item img { width:100px; height:140px; object-fit:cover; border-radius:8px;}
-.item-details h4 { margin:0; font-size:18px; color:#1a237e;}
-.item-details p { margin:5px 0; font-size:14px; color:#555;}
-.item-actions { margin-top:10px;}
-input[type=number] { width:60px; padding:5px;}
-input[type=submit], .delete-btn, .btn { padding:8px 12px; border:none; border-radius:5px; cursor:pointer; font-weight:bold;}
-input[type=submit] { background:#3f51b5; color:white;}
-.delete-btn { background:#f44336; color:white; text-decoration:none;}
-.invoice { background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-.invoice p { font-size:15px; margin:10px 0;}
-.invoice strong { color:#1a237e;}
-.total { font-size:18px; font-weight:bold; color:#e91e63;}
-.coupon-form input[type=text] { width:100%; padding:8px; margin-top:5px;}
-.coupon-form button { margin-top:10px; background:#3f51b5; color:white;}
-.actions { margin-top:30px; display:flex; flex-direction:column; gap:10px;}
-.actions a { text-align:center; padding:10px; border-radius:6px; text-decoration:none; font-weight:bold;}
-.actions .checkout { background:#4caf50; color:white;}
-.actions .back { background:#607d8b; color:white;}
-</style>
-</head>
-<body>
 
 <div class="container">
     <!-- المنتجات -->
@@ -124,5 +93,4 @@ input[type=submit] { background:#3f51b5; color:white;}
     </div>
 </div>
 
-</body>
-</html>
+<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->

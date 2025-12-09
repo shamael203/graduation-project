@@ -41,6 +41,9 @@ if (!$msg['is_read']) {
     $u->close();
 }
 ?>
+
+<?php include 'header.php'; ?>
+
 <!doctype html>
 <html lang="ar">
 <head>
@@ -48,10 +51,14 @@ if (!$msg['is_read']) {
   <title>عرض الرسالة</title>
 </head>
 <body>
-  <h2><?php echo htmlspecialchars($msg['subject'] ?: '(بدون عنوان)'); ?></h2>
-  <p>من: <?php echo htmlspecialchars($msg['sender_name']); ?> — <?php echo $msg['created_at']; ?></p>
-  <hr>
-  <div><?php echo nl2br(htmlspecialchars($msg['body'])); ?></div>
-  <p><a href="inbox.php">عودة لصندوق الوارد</a></p>
+  <div class="container">
+      <h2><?php echo htmlspecialchars($msg['subject'] ?: '(بدون عنوان)'); ?></h2>
+      <p>من: <?php echo htmlspecialchars($msg['sender_name']); ?> — <?php echo $msg['created_at']; ?></p>
+      <hr>
+      <div><?php echo nl2br(htmlspecialchars($msg['body'])); ?></div>
+      <p><a href="inbox.php">عودة لصندوق الوارد</a></p>
+  </div>
 </body>
 </html>
+
+<?php include 'footer.php'; ?>

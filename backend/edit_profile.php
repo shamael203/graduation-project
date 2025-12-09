@@ -6,7 +6,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include 'connect.php';
+include 'header.php';  // الهيدر الموحد
+?>
 
+<?php
 $user_id = $_SESSION['user_id'];
 
 $uploadDir = "uploads/";
@@ -69,6 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -97,6 +101,8 @@ button { margin-top: 10px; padding:10px; background:#28a745; color:white; border
 
     <button type="submit">حفظ التغييرات</button>
 </form>
+
+<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
 
 </body>
 </html>

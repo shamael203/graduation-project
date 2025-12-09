@@ -7,6 +7,9 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'connect.php';
 
+// تضمين الهيدر
+include 'header.php';
+
 // جلب بيانات المستخدم
 $user_id = $_SESSION['user_id'];
 
@@ -35,19 +38,6 @@ $stmt3->execute();
 $books = $stmt3->get_result();
 $stmt3->close();
 ?>
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-<meta charset="UTF-8">
-<title>البروفايل</title>
-<style>
-body { direction: rtl; font-family: Arial; }
-.container { width: 80%; margin: auto; }
-img { width: 150px; height:150px; border-radius: 8px; object-fit: cover; }
-.button { background:#007bff; color:white; padding:10px; border-radius:6px; text-decoration:none; }
-</style>
-</head>
-<body>
 
 <div class="container">
     <h2>الملف الشخصي</h2>
@@ -78,5 +68,7 @@ img { width: 150px; height:150px; border-radius: 8px; object-fit: cover; }
 <?php endwhile; ?>
 </div>
 
-</body>
-</html>
+<?php
+// تضمين الفوتر
+include 'footer.php';
+?>

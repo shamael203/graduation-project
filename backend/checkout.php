@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'connect.php';
+include 'header.php'; // الهيدر الموحد
 
 $user_id = $_SESSION['user_id'] ?? 1;
 
@@ -16,6 +17,7 @@ $result = $stmt->get_result();
 
 // حساب الإجمالي
 $total = 0;
+$items = [];
 while($row = $result->fetch_assoc()){
     $subtotal = $row['price'] * $row['quantity'];
     $total += $subtotal;
@@ -77,5 +79,8 @@ button:hover { background:#388e3c;}
         <button type="submit">تأكيد الطلب ✅</button>
     </form>
 </div>
+
+<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
+
 </body>
 </html>

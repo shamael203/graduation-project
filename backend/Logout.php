@@ -3,6 +3,9 @@ session_start();
 session_unset();
 session_destroy();
 
+// تضمين الهيدر
+include 'header.php';
+
 // تحويل تلقائي بعد 3 ثواني
 header("refresh:3;url=home.php");
 ?>
@@ -49,6 +52,10 @@ header("refresh:3;url=home.php");
 <body>
 
   <p>تم تسجيل خروجك بنجاح</p>
- 
+
+  <?php
+  // تضمين الفوتر
+  include 'footer.php';
+  ?>
 </body>
 </html>
