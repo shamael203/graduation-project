@@ -14,7 +14,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <body style="margin:0; padding:0; font-family:'Segoe UI', sans-serif; direction:rtl;">
 
-<header style="background-color:#007bff; color:#fff; padding:12px 30px; 
+<header style="background-color:#007bff; color:#fff; padding:12px 30px;
                display:flex; justify-content:space-between; align-items:center;">
 
   <div style="font-size:20px; font-weight:bold;">

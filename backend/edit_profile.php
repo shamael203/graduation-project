@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include 'connect.php';
-include 'header.php';  // الهيدر الموحد
+include 'header.php';  // unified header
 ?>
 
 <?php
@@ -17,7 +17,7 @@ if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
 
-// جلب البيانات الحالية
+// Fetch current profile data
 $stmt = $conn->prepare("SELECT bio, phone, avatar FROM profile WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -31,13 +31,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $phone = $_POST["phone"];
     $avatarPath = $profile["avatar"] ?? null;
 
-    // رفع الصورة إن وجدت
+    // Upload avatar if provided
     if (!empty($_FILES["avatar"]["name"])) {
         $file = $_FILES["avatar"];
         $allowed = ['image/jpeg','image/png'];
 
         if (!in_array(mime_content_type($file["tmp_name"]), $allowed)) {
-            $errors[] = "نوع الصورة غير مسموح";
+            $errors[] = "Image type not allowed";
         } else {
             $ext = pathinfo($file["name"], PATHINFO_EXTENSION);
             $newName = $uploadDir . "avatar_" . $user_id . "_" . time() . "." . $ext;
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (empty($errors)) {
 
-        // هل الملف موجود سابقاً؟
+        // Check if profile exists
         $check = $conn->prepare("SELECT user_id FROM profile WHERE user_id = ?");
         $check->bind_param("i", $user_id);
         $check->execute();
@@ -74,12 +74,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>تعديل البروفايل</title>
+<title>Edit Profile</title>
 <style>
-body { direction: rtl; font-family: Arial; }
+body { direction: ltr; font-family: Arial; }
 form { width: 60%; margin: auto; background:white; padding:20px; border-radius:8px; }
 input, textarea { width: 100%; margin-top: 8px; padding: 8px; }
 button { margin-top: 10px; padding:10px; background:#28a745; color:white; border:none; border-radius:5px; }
@@ -87,22 +87,22 @@ button { margin-top: 10px; padding:10px; background:#28a745; color:white; border
 </head>
 <body>
 
-<h2 style="text-align:center">تعديل البيانات</h2>
+<h2 style="text-align:center">Edit Profile</h2>
 
 <form method="POST" enctype="multipart/form-data">
-    <label>الهاتف:</label>
+    <label>Phone:</label>
     <input type="text" name="phone" value="<?= $profile['phone'] ?? '' ?>">
 
-    <label>نبذة:</label>
+    <label>Bio:</label>
     <textarea name="bio"><?= $profile['bio'] ?? '' ?></textarea>
 
-    <label>الصورة الشخصية:</label>
+    <label>Avatar:</label>
     <input type="file" name="avatar">
 
-    <button type="submit">حفظ التغييرات</button>
+    <button type="submit">Save Changes</button>
 </form>
 
-<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
+<?php include 'footer.php'; ?> <!-- unified footer -->
 
 </body>
 </html>

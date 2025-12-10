@@ -1,18 +1,82 @@
 <?php
 session_start();
 include 'connect.php';
-include 'header.php'; // الهيدر الموحد
-// الكود الحالي للدردشة يبقى كما هو
+include 'header.php';
+
+// تأكد أن المستخدم مسجل دخول
+if (empty($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
 $me = (int) $_SESSION['user_id'];
 $other = isset($_GET['user']) ? (int) $_GET['user'] : 0;
 $book_id = isset($_GET['book']) ? (int) $_GET['book'] : null;
 
-if ($other <= 0) { 
-    echo "User not found"; 
-    exit; 
+// لو ما فيه user → عرض قائمة المستخدمين
+if ($other <= 0) {
+    $users = $conn->prepare("SELECT id, name FROM users WHERE id != ?");
+    $users->bind_param("i", $me);
+    $users->execute();
+    $resultUsers = $users->get_result();
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Messages</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f5f7;
+                margin: 0;
+                padding: 0;
+            }
+            .main-content {
+                max-width: 800px;
+                margin: 50px auto;
+                background: #fff;
+                padding: 30px;
+                border-radius: 10px;
+                text-align: center;
+            }
+            .main-content h2 {
+                margin-bottom: 20px;
+                color: #333;
+            }
+            .user-list a {
+                display: block;
+                padding: 10px;
+                margin: 8px 0;
+                background: #007bff;
+                color: #fff;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            .user-list a:hover {
+                background: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+    <section class="main-content">
+        <h2>Select a user to chat with</h2>
+        <div class="user-list">
+            <?php while ($u = $resultUsers->fetch_assoc()): ?>
+                <a href="chat.php?user=<?= $u['id'] ?>">
+                    <?= htmlspecialchars($u['name']) ?>
+                </a>
+            <?php endwhile; ?>
+        </div>
+    </section>
+    </body>
+    </html>
+    <?php
+    exit;
 }
 
-// Send a message
+// إرسال رسالة
 if (!empty($_POST['msg'])) {
     if ($book_id) {
         $stmt = $conn->prepare("INSERT INTO messages (sender_id, receiver_id, message, date, book_id) VALUES (?, ?, ?, NOW(), ?)");
@@ -28,7 +92,7 @@ if (!empty($_POST['msg'])) {
     exit;
 }
 
-// Fetch conversation
+// جلب المحادثة
 $stmt = $conn->prepare("SELECT * FROM messages WHERE (sender_id=? AND receiver_id=?) OR (sender_id=? AND receiver_id=?) ORDER BY id ASC");
 $stmt->bind_param("iiii", $me, $other, $other, $me);
 $stmt->execute();
@@ -36,16 +100,15 @@ $result = $stmt->get_result();
 $messages = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// Fetch other user's name
+// جلب اسم المستخدم الآخر
 $stmt2 = $conn->prepare("SELECT name FROM users WHERE id=?");
 $stmt2->bind_param("i", $other);
 $stmt2->execute();
 $otherUser = $stmt2->get_result()->fetch_assoc();
 $stmt2->close();
 ?>
-
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Chat with <?= htmlspecialchars($otherUser['name']) ?></title>
@@ -57,7 +120,6 @@ $stmt2->close();
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      direction: rtl;
     }
     .chat-container {
       background-color: #ffffff;
@@ -160,7 +222,7 @@ $stmt2->close();
 <div class="chat-container">
     <header class="chat-header">
       <div class="chat-header-title">Chat with <?= htmlspecialchars($otherUser['name']) ?></div>
-      <a href="home.php" class="back-link">← Back</a>
+      <a href="chat.php" class="back-link">← Back</a>
     </header>
 
     <div class="chat-window">
@@ -188,7 +250,6 @@ $stmt2->close();
     </form>
 </div>
 
-<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
-
+<?php include 'footer.php'; ?>
 </body>
 </html>

@@ -2,7 +2,7 @@
 session_start();
 include 'connect.php';
 
-// تضمين الهيدر
+// Include header
 include 'header.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (password_verify($password, $row['password'])) {
 
-            // 🔥 مهم جداً — هنا نضيف السشن
+            // Add session
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['user_name'] = $row['name'];
             $_SESSION['user_email'] = $row['email'];
@@ -30,51 +30,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: index.php");
             exit;
         } else {
-            $error = "كلمة المرور غير صحيحة";
+            $error = "Incorrect password";
         }
 
     } else {
-        $error = "البريد الإلكتروني غير موجود";
+        $error = "Email not found";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>تسجيل الدخول - BookSwap</title>
+  <title>Login - BookSwap</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    /* ... هنا يبقى نفس الـ CSS الأصلي بدون أي تغيير ... */
+    /* Keep your original CSS here */
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>تسجيل الدخول</h2>
+    <h2>Login</h2>
 
-    <!-- ✅ عرض الرسائل هنا -->
+    <!-- Display error messages -->
     <?php if (!empty($error)) : ?>
       <div class="alert error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
     <form action="login.php" method="POST" autocomplete="off">
-      <label for="email">البريد الإلكتروني</label>
+      <label for="email">Email</label>
       <input type="email" name="email" id="email" required autocomplete="off" />
 
-      <label for="password">كلمة المرور</label>
+      <label for="password">Password</label>
       <input type="password" name="password" id="password" required autocomplete="new-password" />
 
-      <button type="submit">تسجيل الدخول</button>
+      <button type="submit">Login</button>
 
       <div class="note">
-        ليس لديك حساب؟ <a href="register.php">سجل الآن</a>
+        Don't have an account? <a href="register.php">Register now</a>
       </div>
     </form>
   </div>
 
   <?php
-  // تضمين الفوتر
+  // Include footer
   include 'footer.php';
   ?>
 </body>

@@ -15,7 +15,7 @@ if ($id <= 0) {
     exit; 
 }
 
-// جلب الرسالة والتأكد أن المستلم هو المستخدم
+// Fetch the message and ensure the recipient is the user
 $stmt = $conn->prepare("
   SELECT m.*, u.name AS sender_name
   FROM messages m
@@ -29,11 +29,11 @@ $msg = $result->fetch_assoc();
 $stmt->close();
 
 if (!$msg) { 
-    echo "لا تملك صلاحية عرض هذه الرسالة."; 
+    echo "You do not have permission to view this message."; 
     exit; 
 }
 
-// وسمها كمقروء إن لم تكن كذلك
+// Mark as read if not already
 if (!$msg['is_read']) {
     $u = $conn->prepare("UPDATE messages SET is_read = 1 WHERE id = ?");
     $u->bind_param("i", $id);
@@ -45,18 +45,18 @@ if (!$msg['is_read']) {
 <?php include 'header.php'; ?>
 
 <!doctype html>
-<html lang="ar">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>عرض الرسالة</title>
+  <title>View Message</title>
 </head>
 <body>
   <div class="container">
-      <h2><?php echo htmlspecialchars($msg['subject'] ?: '(بدون عنوان)'); ?></h2>
-      <p>من: <?php echo htmlspecialchars($msg['sender_name']); ?> — <?php echo $msg['created_at']; ?></p>
+      <h2><?php echo htmlspecialchars($msg['subject'] ?: '(No Subject)'); ?></h2>
+      <p>From: <?php echo htmlspecialchars($msg['sender_name']); ?> — <?php echo $msg['created_at']; ?></p>
       <hr>
       <div><?php echo nl2br(htmlspecialchars($msg['body'])); ?></div>
-      <p><a href="inbox.php">عودة لصندوق الوارد</a></p>
+      <p><a href="inbox.php">Back to Inbox</a></p>
   </div>
 </body>
 </html>

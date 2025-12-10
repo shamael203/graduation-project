@@ -2,20 +2,20 @@
 session_start();
 include "connect.php";
 
-// تضمين الهيدر
+// Include header
 include "header.php";
 
-// معلومات المستخدم
+// User info
 $username = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : null;
 $user_email = isset($_SESSION['user_email']) ? $_SESSION['user_email'] : null;
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1;
 
-// معالجة إضافة للسلة
+// Handle add to cart
 if (isset($_POST['add_to_cart'])) {
     $book_id = intval($_POST['book_id']);
     $quantity = 1;
 
-    // تأكد أن الكتاب موجود فعلاً
+    // Check if book exists
     $stmt = $conn->prepare("SELECT id FROM books WHERE id=?");
     $stmt->bind_param("i", $book_id);
     $stmt->execute();
@@ -25,7 +25,7 @@ if (isset($_POST['add_to_cart'])) {
         exit;
     }
 
-    // هل الكتاب موجود مسبقاً في السلة؟
+    // Check if book already in cart
     $stmt = $conn->prepare("SELECT id FROM cart WHERE user_id=? AND book_id=?");
     $stmt->bind_param("ii", $user_id, $book_id);
     $stmt->execute();
@@ -47,7 +47,7 @@ if (isset($_POST['add_to_cart'])) {
     exit;
 }
 
-// التعامل مع البحث
+// Handle search
 $search = "";
 if (isset($_GET['search'])) {
     $search = trim($_GET['search']);
@@ -62,42 +62,42 @@ if (isset($_GET['search'])) {
 ?>
 
 <div class="main">
-    <!-- البحث -->
+    <!-- Search -->
     <form method="GET" action="view_books.php" class="search-box">
-        <input type="text" name="search" placeholder="اكتب عنوان الكتاب أو اسم المؤلف..." value="<?= htmlspecialchars($search) ?>">
-        <button type="submit">بحث</button>
+        <input type="text" name="search" placeholder="Enter book title or author name..." value="<?= htmlspecialchars($search) ?>">
+        <button type="submit">Search</button>
     </form>
 
-    <!-- الكتب -->
+    <!-- Books -->
     <div class="books-grid">
     <?php if ($result && $result->num_rows > 0): ?>
         <?php while($row = $result->fetch_assoc()): ?>
             <?php $imageFile = !empty($row['image']) ? "uploads/" . $row['image'] : "uploads/default.png"; ?>
             <div class="book">
-                <img src="<?= htmlspecialchars($imageFile)?>" alt="صورة الكتاب">
+                <img src="<?= htmlspecialchars($imageFile)?>" alt="Book Image">
                 <div class="book-info">
-                    <h3>📖 <?= htmlspecialchars($row['title']) ?></h3>
-                    <p>المؤلف: <?= htmlspecialchars($row['author']) ?></p>
+                    <h3><?= htmlspecialchars($row['title']) ?></h3>
+                    <p>Author: <?= htmlspecialchars($row['author']) ?></p>
                     <?php if(!empty($row['edition'])): ?>
-                        <p>الطبعة: <?= htmlspecialchars($row['edition']) ?></p>
+                        <p>Edition: <?= htmlspecialchars($row['edition']) ?></p>
                     <?php endif; ?>
-                    <p class="price">السعر: <?= htmlspecialchars($row['price']) ?> ر.س</p>
+                    <p class="price">Price: <?= htmlspecialchars($row['price']) ?> SAR</p>
 
-                    <!-- نموذج إضافة للسلة -->
+                    <!-- Add to cart form -->
                     <form method="POST" action="view_books.php">
                         <input type="hidden" name="book_id" value="<?= (int)$row['id'] ?>">
-                        <button type="submit" name="add_to_cart">إضافة إلى السلة</button>
+                        <button type="submit" name="add_to_cart">Add to Cart</button>
                     </form>
                 </div>
             </div>
         <?php endwhile; ?>
     <?php else: ?>
-        <p style="text-align:center;">لا توجد كتب حالياً.</p>
+        <p style="text-align:center;">No books available.</p>
     <?php endif; ?>
     </div>
 </div>
 
 <?php
-// تضمين الفوتر
+// Include footer
 include "footer.php";
 ?>

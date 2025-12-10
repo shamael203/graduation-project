@@ -1,32 +1,32 @@
 <?php
 include 'connect.php';
 
-// تضمين الهيدر
+// Include header
 include 'header.php';
 
-$message = ""; // متغير لتخزين الرسائل
+$message = ""; // Variable to store messages
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
 
-    // تحقق من الحقول
+    // Validate fields
     if (empty($name) || empty($email) || empty($password)) {
-        $message = "<div class='alert error'>⚠️ جميع الحقول مطلوبة.</div>";
+        $message = "<div class='alert error'>All fields are required.</div>";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $message = "<div class='alert error'>⚠️ البريد الإلكتروني غير صالح.</div>";
+        $message = "<div class='alert error'>Invalid email address.</div>";
     } elseif (strlen($password) < 8) {
-        $message = "<div class='alert error'>⚠️ يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل.</div>";
+        $message = "<div class='alert error'>Password must be at least 8 characters long.</div>";
     } else {
-        // تحقق إذا البريد موجود مسبقًا
+        // Check if email already exists
         $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $message = "<div class='alert error'>⚠️ البريد الإلكتروني مسجل مسبقًا. يرجى استخدام بريد آخر.</div>";
+            $message = "<div class='alert error'>Email is already registered. Please use another email.</div>";
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
@@ -34,11 +34,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_insert->bind_param("sss", $name, $email, $hashed_password);
 
             if ($stmt_insert->execute()) {
-                $message = "<div class='alert success'>✅ تم التسجيل بنجاح! مرحبًا بك في BookSwap.</div>";
+                $message = "<div class='alert success'>Registration successful! Welcome to BookSwap.</div>";
                 header("Location: login.php");
                 exit;
             } else {
-                $message = "<div class='alert error'>⚠️ حدث خطأ أثناء التسجيل. حاول مرة أخرى لاحقًا.</div>";
+                $message = "<div class='alert error'>An error occurred during registration. Please try again later.</div>";
             }
             $stmt_insert->close();
         }
@@ -49,25 +49,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <div class="container">
-  <h2>تسجيل مستخدم جديد</h2>
+  <h2>Register New User</h2>
 
   <?php if (!empty($message)) echo $message; ?>
 
   <form action="register.php" method="POST" novalidate>
-    <label for="name">الاسم</label>
-    <input id="name" name="name" type="text" required minlength="2" maxlength="100" placeholder="اكتب اسمك الكامل">
+    <label for="name">Name</label>
+    <input id="name" name="name" type="text" required minlength="2" maxlength="100" placeholder="Enter your full name">
 
-    <label for="email">البريد الإلكتروني</label>
+    <label for="email">Email</label>
     <input id="email" name="email" type="email" required maxlength="255" placeholder="example@email.com" autocomplete="off">
 
-    <label for="password">كلمة المرور</label>
-    <input id="password" name="password" type="password" required minlength="8" placeholder="أدخل كلمة مرور قوية" required autocomplete="new-password">
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" required minlength="8" placeholder="Enter a strong password" autocomplete="new-password">
 
-    <button type="submit">سجّل الآن</button>
+    <button type="submit">Register Now</button>
   </form>
 </div>
 
 <?php
-// تضمين الفوتر
+// Include footer
 include 'footer.php';
 ?>

@@ -9,7 +9,7 @@ if (empty($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// جلب الرسائل من قاعدة البيانات
+// Fetch messages from database
 $sql = "SELECT m.id, m.sender_id, u.name AS sender_name, m.book_id, m.message, m.date
         FROM messages m
         JOIN users u ON m.sender_id = u.id
@@ -26,13 +26,13 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>📥 صندوق الرسائل - BookSwap</title>
+<title>Inbox - BookSwap</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { font-family:"Tajawal", Arial, sans-serif; direction:rtl; background:#f2f6ff; margin:0; padding:0; }
+body { font-family:"Segoe UI", Arial, sans-serif; direction:ltr; background:#f2f6ff; margin:0; padding:0; }
 .navbar { display:flex; justify-content: space-between; align-items:center; background:#3f51b5; color:white; padding:15px 20px; position: sticky; top:0; box-shadow:0 2px 5px rgba(0,0,0,0.2); z-index:100; }
 .navbar h1 { margin:0; font-size:22px; }
 .nav-links { list-style:none; display:flex; gap:15px; padding:0; margin:0; align-items:center; }
@@ -40,7 +40,7 @@ body { font-family:"Tajawal", Arial, sans-serif; direction:rtl; background:#f2f6
 .nav-links li a:hover { background:#283593; }
 .user-dropdown { position: relative; }
 .user-dropdown-content { display:none; position:absolute; top:35px; right:0; background:white; color:#333; min-width:180px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.2); padding:10px; z-index:100; }
-.user-dropdown-content p { margin:0 0 10px 0; text-align:right; font-size:14px; }
+.user-dropdown-content p { margin:0 0 10px 0; text-align:left; font-size:14px; }
 .user-dropdown-content a { display:block; text-decoration:none; color:#3f51b5; padding:8px; border-radius:5px; text-align:center; font-weight:bold; margin-bottom:5px; }
 .user-dropdown-content a.logout { background:red; color:white; }
 .user-dropdown-content a:hover { background:#e0e0ff; }
@@ -61,18 +61,18 @@ footer { background:#3f51b5; color:white; text-align:center; padding:15px 20px; 
 <?php include 'header.php'; ?>
 
 <div class="container">
-    <h2>📥 صندوق الرسائل</h2>
+    <h2>Inbox</h2>
 
     <?php if (count($messages) > 0): ?>
         <?php foreach ($messages as $msg): ?>
             <div class="message-card">
-                <p class="sender">من: <?= htmlspecialchars($msg['sender_name']) ?></p>
+                <p class="sender">From: <?= htmlspecialchars($msg['sender_name']) ?></p>
                 <p><?= nl2br(htmlspecialchars($msg['message'])) ?></p>
-                <p class="time">📅 <?= date("d M Y H:i", strtotime($msg['date'])) ?></p>
+                <p class="time"><?= date("d M Y H:i", strtotime($msg['date'])) ?></p>
             </div>
         <?php endforeach; ?>
     <?php else: ?>
-        <p style="text-align:center;">⚠️ لا توجد رسائل حالياً.</p>
+        <p style="text-align:center;">No messages available.</p>
     <?php endif; ?>
 </div>
 
