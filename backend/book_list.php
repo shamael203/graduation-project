@@ -1,40 +1,103 @@
+
 <?php
+// الاتصال بقاعدة البيانات
 session_start();
 include 'connect.php';
-include 'header.php';  // unified header
+include 'header.php';  // الهيدر الموحد
 
-// Fetch all books from database
+// جلب جميع الكتب من قاعدة البيانات
 $sql = "SELECT * FROM books";
 $result = $conn->query($sql);
 ?>
 
-<div class="container">
-    <h2>Available Books</h2>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>قائمة الكتب</title>
+    <style>
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #888;
+            text-align: center;
+        }
+        th {
+            background: #222;
+            color: white;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 30px;
+        }
+        a.book-link {
+            color: #1a237e;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a.book-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
 
+<h2>📚 قائمة الكتب المتاحة</h2>
+<div class="container">
+    <h2>📚 قائمة الكتب المتاحة</h2>
+
+<table>
+    <tr>
+        <th>عنوان الكتاب</th>
+        <th>المؤلف</th>
+        <th>الطبعة</th>
+        <th>السعر</th>
+    </tr>
     <table>
         <tr>
-            <th>Book Title</th>
-            <th>Author</th>
-            <th>Edition</th>
-            <th>Price</th>
+            <th>عنوان الكتاب</th>
+            <th>المؤلف</th>
+            <th>الطبعة</th>
+            <th>السعر</th>
         </tr>
 
+    <?php
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            echo "<tr>";
+            // العنوان كرابط يفتح صفحة التفاصيل
+            echo "<td><a class='book-link' href='book_details.php?id=" . (int)$row['id'] . "'>" . htmlspecialchars($row['title']) . "</a></td>";
+            echo "<td>" . htmlspecialchars($row['author']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['edition']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['price']) . " ﷼</td>";
+            echo "</tr>";
         <?php
         if ($result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
                 echo "<tr>";
-                // Title as a link to open details page
+                // العنوان كرابط يفتح صفحة التفاصيل
                 echo "<td><a class='book-link' href='book_details.php?id=" . (int)$row['id'] . "'>" . htmlspecialchars($row['title']) . "</a></td>";
                 echo "<td>" . htmlspecialchars($row['author']) . "</td>";
                 echo "<td>" . htmlspecialchars($row['edition']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['price']) . " SAR</td>";
+                echo "<td>" . htmlspecialchars($row['price']) . " ﷼</td>";
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='4'>No books available</td></tr>";
+            echo "<tr><td colspan='4'>لا توجد كتب حالياً</td></tr>";
         }
+    } else {
+        echo "<tr><td colspan='4'>لا توجد كتب حالياً</td></tr>";
+    }
+    ?>
+</table>
         ?>
     </table>
 </div>
 
-<?php include 'footer.php'; ?> <!-- unified footer -->
+</body>
+</html>

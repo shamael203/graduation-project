@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 include 'connect.php';
@@ -42,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send'])) {
 } else {
     echo "Invalid request.";
 }
+?>
 
 // تضمين الفوتر
 include 'footer.php';

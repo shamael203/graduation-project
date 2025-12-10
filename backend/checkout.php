@@ -1,11 +1,12 @@
+
 <?php
 session_start();
 include 'connect.php';
-include 'header.php'; // unified header
+include 'header.php'; // الهيدر الموحد
 
 $user_id = $_SESSION['user_id'] ?? 1;
 
-// Fetch cart data
+// جلب بيانات السلة
 $sql = "SELECT books.title, books.price, cart.quantity
         FROM cart
         JOIN books ON cart.book_id = books.id
@@ -15,7 +16,7 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Calculate totals
+// حساب الإجمالي
 $total = 0;
 $items = [];
 while($row = $result->fetch_assoc()){
@@ -27,12 +28,12 @@ $vat = $total * 0.15;
 $grand_total = $total + $vat;
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>Checkout</title>
+<title>✅ إتمام الشراء</title>
 <style>
-body { font-family: Arial, sans-serif; background:#f9f9f9; direction:ltr; }
+body { font-family:"Tajawal", sans-serif; background:#f9f9f9; direction:rtl; }
 .container { max-width:800px; margin:40px auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
 h2 { text-align:center; color:#3f51b5; margin-bottom:20px;}
 table { width:100%; border-collapse:collapse; margin-bottom:20px;}
@@ -46,41 +47,42 @@ button:hover { background:#388e3c;}
 </head>
 <body>
 <div class="container">
-    <h2>Checkout</h2>
+    <h2>🧾 إتمام عملية الشراء</h2>
 
-    <!-- Products Table -->
+    <!-- جدول المنتجات -->
     <table>
-        <tr><th>Book</th><th>Quantity</th><th>Price</th><th>Total</th></tr>
+        <tr><th>الكتاب</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>
         <?php foreach($items as $item): ?>
         <tr>
             <td><?= htmlspecialchars($item['title']) ?></td>
             <td><?= $item['quantity'] ?></td>
-            <td><?= number_format($item['price'],2) ?> SAR</td>
-            <td><?= number_format($item['price']*$item['quantity'],2) ?> SAR</td>
+            <td><?= number_format($item['price'],2) ?> ر.س</td>
+            <td><?= number_format($item['price']*$item['quantity'],2) ?> ر.س</td>
         </tr>
         <?php endforeach; ?>
     </table>
 
-    <!-- Invoice Details -->
-    <p>Subtotal: <?= number_format($total,2) ?> SAR</p>
-    <p>VAT (15%): <?= number_format($vat,2) ?> SAR</p>
-    <p class="total">Grand Total: <?= number_format($grand_total,2) ?> SAR</p>
+    <!-- تفاصيل الفاتورة -->
+    <p>المجموع الفرعي: <?= number_format($total,2) ?> ر.س</p>
+    <p>ضريبة القيمة المضافة (15%): <?= number_format($vat,2) ?> ر.س</p>
+    <p class="total">الإجمالي الكلي: <?= number_format($grand_total,2) ?> ر.س</p>
 
-    <!-- Customer Form -->
+    <!-- نموذج بيانات العميل -->
     <form method="POST" action="confirm_order.php">
-        <input type="text" name="name" placeholder="Full Name" required>
-        <input type="email" name="email" placeholder="Email Address" required>
-        <input type="text" name="address" placeholder="Address" required>
+        <input type="text" name="name" placeholder="الاسم الكامل" required>
+        <input type="email" name="email" placeholder="البريد الإلكتروني" required>
+        <input type="text" name="address" placeholder="العنوان" required>
         <select name="payment_method" required>
-            <option value="">Select Payment Method</option>
-            <option value="cash">Cash on Delivery</option>
-            <option value="card">Credit/Debit Card</option>
+            <option value="">اختر طريقة الدفع</option>
+            <option value="cash">الدفع عند الاستلام</option>
+            <option value="card">بطاقة بنكية</option>
         </select>
-        <button type="submit">Confirm Order</button>
+        <button type="submit">تأكيد الطلب ✅</button>
     </form>
 </div>
 
-<?php include 'footer.php'; ?> <!-- unified footer -->
+<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
 
 </body>
+</html>
 </html>

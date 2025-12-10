@@ -1,6 +1,7 @@
+
 <?php
 session_start();
-include "connect.php"; // Database connection
+include "connect.php"; // الاتصال بقاعدة البيانات
 
 if(!isset($_SESSION['user_id'])){
     die("You must log in first");
@@ -14,7 +15,7 @@ if (isset($_POST['save'])) {
     $edition = $_POST['edition'];
     $price = $_POST['price'];
 
-    // Upload image
+    // رفع الصورة
     $imagePath = NULL;
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $targetDir = "uploads/";
@@ -26,13 +27,13 @@ if (isset($_POST['save'])) {
         $targetFile = $targetDir . $fileName;
 
         if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
-            $imagePath = $fileName; // only filename
+            $imagePath = $fileName; // فقط اسم الملف
         } else {
-            $message = "<div class='alert error'>An error occurred while uploading the image</div>";
+            $message = "<div class='alert error'>❌ حدث خطأ أثناء رفع الصورة</div>";
         }
     }
 
-    // Insert data into database
+    // إدخال البيانات في قاعدة البيانات
     $sql = "INSERT INTO books (title, author, edition, price, user_id, image)
             VALUES ('$title', '$author', '$edition', '$price', '$user_id', '$imagePath')";
 
@@ -40,19 +41,19 @@ if (isset($_POST['save'])) {
         header("Location: view_books.php");
         exit;
     } else {
-        $message = "<div class='alert error'>Error: " . $conn->error . "</div>";
+        $message = "<div class='alert error'>❌ حدث خطأ: " . $conn->error . "</div>";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="utf-8">
-<title>Add Book - BookSwap</title>
+<title>إضافة كتاب - BookSwap</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { font-family: "Segoe UI", Arial; direction: ltr; background: #f0f4ff; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; }
+body { font-family: "Tajawal", Arial; direction: rtl; background: #f0f4ff; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; }
 .container { background:#fff; padding:35px 40px; border-radius:16px; max-width:440px; width:100%; box-shadow:0 8px 20px rgba(0,0,0,0.1);}
 h2 { text-align:center; color:#1a237e; margin-bottom:25px; }
 label { display:block; margin-bottom:6px; font-weight:600; }
@@ -70,25 +71,25 @@ button:hover { background:#2c3e9a; }
 <?php include 'header.php'; ?>
 
 <div class="container">
-  <h2>Add New Book</h2>
+  <h2>📚 إضافة كتاب جديد</h2>
   <?php echo $message; ?>
   <form method="POST" enctype="multipart/form-data">
-    <label for="title">Book Title</label>
-    <input id="title" name="title" type="text" required maxlength="255" placeholder="Enter book title">
+    <label for="title">عنوان الكتاب</label>
+    <input id="title" name="title" type="text" required maxlength="255" placeholder="أدخل عنوان الكتاب">
 
-    <label for="author">Author</label>
-    <input id="author" name="author" type="text" required maxlength="255" placeholder="Enter author's name">
+    <label for="author">اسم المؤلف</label>
+    <input id="author" name="author" type="text" required maxlength="255" placeholder="اسم المؤلف">
 
-    <label for="edition">Edition</label>
-    <input id="edition" name="edition" type="text" maxlength="100" placeholder="e.g. Second Edition">
+    <label for="edition">الطبعة</label>
+    <input id="edition" name="edition" type="text" maxlength="100" placeholder="مثلاً: الطبعة الثانية">
 
-    <label for="price">Price (SAR)</label>
-    <input id="price" name="price" type="number" step="0.01" required placeholder="Enter price">
+    <label for="price">السعر (ر.س)</label>
+    <input id="price" name="price" type="number" step="0.01" required placeholder="أدخل السعر">
 
-    <label for="image">Book Image</label>
+    <label for="image">صورة الكتاب</label>
     <input id="image" name="image" type="file" accept="image/*">
 
-    <button type="submit" name="save">Save Book</button>
+    <button type="submit" name="save">💾 حفظ الكتاب</button>
   </form>
 </div>
 

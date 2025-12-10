@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 include 'connect.php';
@@ -84,4 +85,5 @@ p { font-size:16px; color:#333; margin:10px 0;}
 <?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
 
 </body>
+</html>
 </html>

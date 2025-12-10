@@ -1,82 +1,116 @@
+
 <?php
 session_start();
-include 'connect.php'; 
+include 'connect.php';
 
 if (empty($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-$user_id = $_SESSION['user_id'];
+$me = (int) $_SESSION['user_id'];
 
-// Fetch messages from database
-$sql = "SELECT m.id, m.sender_id, u.name AS sender_name, m.book_id, m.message, m.date
-        FROM messages m
-        JOIN users u ON m.sender_id = u.id
-        WHERE m.receiver_id = ?
-        ORDER BY m.date DESC";
+// جلب آخر رسالة مع كل مستخدم
+$sql = "
+    SELECT u.id, u.name, m.message, m.date
+    FROM users u
+    JOIN messages m ON (u.id = m.sender_id OR u.id = m.receiver_id)
+    WHERE u.id != ?
+    AND m.id IN (
+        SELECT MAX(id) FROM messages 
+        WHERE sender_id = u.id OR receiver_id = u.id
+    )
+    ORDER BY m.date DESC
+";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("i", $me);
 $stmt->execute();
 $result = $stmt->get_result();
-$messages = [];
-while ($row = $result->fetch_assoc()) {
-    $messages[] = $row;
-}
-$stmt->close();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>Inbox - BookSwap</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body { font-family:"Segoe UI", Arial, sans-serif; direction:ltr; background:#f2f6ff; margin:0; padding:0; }
-.navbar { display:flex; justify-content: space-between; align-items:center; background:#3f51b5; color:white; padding:15px 20px; position: sticky; top:0; box-shadow:0 2px 5px rgba(0,0,0,0.2); z-index:100; }
-.navbar h1 { margin:0; font-size:22px; }
-.nav-links { list-style:none; display:flex; gap:15px; padding:0; margin:0; align-items:center; }
-.nav-links li a { color:white; text-decoration:none; padding:6px 12px; border-radius:5px; font-weight:bold; }
-.nav-links li a:hover { background:#283593; }
-.user-dropdown { position: relative; }
-.user-dropdown-content { display:none; position:absolute; top:35px; right:0; background:white; color:#333; min-width:180px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.2); padding:10px; z-index:100; }
-.user-dropdown-content p { margin:0 0 10px 0; text-align:left; font-size:14px; }
-.user-dropdown-content a { display:block; text-decoration:none; color:#3f51b5; padding:8px; border-radius:5px; text-align:center; font-weight:bold; margin-bottom:5px; }
-.user-dropdown-content a.logout { background:red; color:white; }
-.user-dropdown-content a:hover { background:#e0e0ff; }
-.user-dropdown:hover .user-dropdown-content { display:block; }
-
-.container { max-width: 800px; margin: 30px auto; background: #fff; padding: 25px 30px; border-radius: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-h2 { text-align:center; color:#1a237e; margin-bottom:20px; }
-.message-card { background:#f7f8ff; border:1px solid #d6d9ff; padding:15px 20px; border-radius:10px; margin-bottom:15px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.message-card:hover { transform: translateY(-3px); box-shadow:0 6px 15px rgba(0,0,0,0.1); }
-.message-card p { margin:6px 0; font-size:15px; }
-.message-card .sender { font-weight:bold; color:#3f51b5; }
-.message-card .time { font-size:13px; color:#888; }
-footer { background:#3f51b5; color:white; text-align:center; padding:15px 20px; margin-top:40px; border-top-left-radius:8px; border-top-right-radius:8px; }
-</style>
+  <meta charset="UTF-8">
+  <title>صندوق الرسائل</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ece5dd;
+      margin: 0;
+      padding: 0;
+    }
+    .inbox-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100vh;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .inbox-header {
+      background: #075e54;
+      color: #fff;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .chat-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .chat-list li {
+      border-bottom: 1px solid #ddd;
+    }
+    .chat-list a {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      text-decoration: none;
+      color: #000;
+    }
+    .chat-list a:hover {
+      background: #f0f0f0;
+    }
+    .chat-info {
+      flex: 1;
+    }
+    .chat-name {
+      font-weight: bold;
+    }
+    .chat-message {
+      font-size: 14px;
+      color: #555;
+    }
+    .chat-date {
+      font-size: 12px;
+      color: #888;
+      margin-left: 10px;
+    }
+  </style>
 </head>
 <body>
+  <div class="inbox-container">
 
 <?php include 'header.php'; ?>
 
-<div class="container">
-    <h2>Inbox</h2>
-
-    <?php if (count($messages) > 0): ?>
-        <?php foreach ($messages as $msg): ?>
-            <div class="message-card">
-                <p class="sender">From: <?= htmlspecialchars($msg['sender_name']) ?></p>
-                <p><?= nl2br(htmlspecialchars($msg['message'])) ?></p>
-                <p class="time"><?= date("d M Y H:i", strtotime($msg['date'])) ?></p>
+<div class="inbox-container">
+    <div class="inbox-header">📩 الرسائل</div>
+    <ul class="chat-list">
+      <?php while($row = $result->fetch_assoc()): ?>
+        <li>
+          <a href="chat.php?user=<?= $row['id'] ?>">
+            <div class="chat-info">
+              <div class="chat-name"><?= htmlspecialchars($row['name']) ?></div>
+              <div class="chat-message"><?= htmlspecialchars($row['message']) ?></div>
             </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p style="text-align:center;">No messages available.</p>
-    <?php endif; ?>
+            <div class="chat-date"><?= date("H:i", strtotime($row['date'])) ?></div>
+          </a>
+        </li>
+      <?php endwhile; ?>
+    </ul>
+  </div>
+</body>
+</html>
 </div>
 
 <?php include 'footer.php'; ?>
-
-</body>
-</html>
