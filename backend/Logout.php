@@ -3,9 +3,6 @@ session_start();
 session_unset();
 session_destroy();
 
-// Include header
-include 'header.php';
-
 // Auto redirect after 3 seconds
 header("refresh:3;url=home.php");
 ?>
@@ -53,9 +50,7 @@ header("refresh:3;url=home.php");
 
   <p>You have successfully logged out</p>
 
-  <?php
-  // Include footer
-  include 'footer.php';
-  ?>
+
+  
 </body>
 </html>

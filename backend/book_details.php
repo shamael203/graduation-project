@@ -63,9 +63,8 @@ $stmt2->close();
     <div class="book-details">
       <h2><?= htmlspecialchars($book['title']) ?></h2>
       <p><strong>Author:</strong> <?= htmlspecialchars($book['author']) ?></p>
-      <p><strong>Publisher:</strong> <?= htmlspecialchars($book['publisher'] ?? 'Not specified') ?></p>
-      <p><strong>ISBN:</strong> <?= htmlspecialchars($book['isbn'] ?? 'Not available') ?></p>
-      <p><strong>Category:</strong> <?= htmlspecialchars($book['category'] ?? 'Not specified') ?></p>
+      
+     
       <p><strong>Edition:</strong> <?= htmlspecialchars($book['edition'] ?? 'Not specified') ?></p>
       <p class="price"><?= htmlspecialchars($book['price']) ?> SAR</p>
 

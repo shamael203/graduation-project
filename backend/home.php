@@ -1,6 +1,14 @@
 <?php
 session_start();
 include 'connect.php';
+include 'header.php'; // الهيدر الموحد
+
+// Default query
+$sql = "SELECT books.*, users.name AS user_name, users.email AS user_email
+        FROM books
+        JOIN users ON books.user_id = users.id
+        ORDER BY books.id DESC";
+$books = $conn->query($sql);
 
 // User data
 $username   = $_SESSION['user_name'] ?? null;
@@ -11,15 +19,16 @@ $user_id    = $_SESSION['user_id'] ?? null;
 $search = "";
 if (isset($_GET['search'])) {
     $search = trim($_GET['search']);
-    $sql = "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? ORDER BY id DESC";
+    $sql = "SELECT books.*, users.name AS user_name, users.email AS user_email
+            FROM books
+            JOIN users ON books.user_id = users.id
+            WHERE books.title LIKE ? OR books.author LIKE ?
+            ORDER BY books.id DESC";
     $stmt = $conn->prepare($sql);
     $likeSearch = "%$search%";
     $stmt->bind_param("ss", $likeSearch, $likeSearch);
     $stmt->execute();
     $books = $stmt->get_result();
-} else {
-    $sql = "SELECT * FROM books ORDER BY id DESC LIMIT 12";
-    $books = $conn->query($sql);
 }
 
 // Messages preview
@@ -54,12 +63,6 @@ if ($user_id) {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 body { font-family:"Segoe UI", Arial, sans-serif; margin:0; padding:0; background:#f0f4ff; direction:ltr; }
-header { background:#3f51b5; color:white; padding:15px 20px; position:sticky; top:0; z-index:100; }
-.navbar { display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; }
-.navbar h1 { margin:0; font-size:22px; }
-.nav-links { list-style:none; display:flex; gap:15px; padding:0; margin:0; align-items:center; position: relative; }
-.nav-links li a { color:white; text-decoration:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-weight:bold; }
-.nav-links li a:hover { background:#283593; }
 
 /* Dropdown */
 .user-dropdown { position: relative; }
@@ -86,19 +89,46 @@ header { background:#3f51b5; color:white; padding:15px 20px; position:sticky; to
 .main-content h2 { color:#1a237e; font-size:32px; margin-bottom:20px; }
 
 /* Search */
-.search-box { max-width: 600px; margin: 30px auto; position: relative; }
-.search-box input {
-    width: 100%; padding: 14px 50px 14px 15px; border-radius: 40px;
-    border: 2px solid #b9c4ff; font-size: 17px; outline: none; transition: 0.3s;
-}
-.search-box input:focus { border-color: #3f51b5; box-shadow: 0 0 6px rgba(63,81,181,0.4); }
-.search-box button {
-    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-    background: #3f51b5; border: none; color: white; padding: 10px 18px;
-    border-radius: 30px; cursor: pointer; font-size: 15px;
-}
-.search-box button:hover { background:#283593; }
 
+.search-box {
+  max-width: 600px;
+  margin: 30px auto;
+  position: relative;
+  width: 100%;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 14px 60px 14px 15px; /* مساحة للزر على اليمين */
+  border-radius: 40px;
+  border: 2px solid #b9c4ff;
+  font-size: 17px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.search-box input:focus {
+  border-color: #3f51b5;
+  box-shadow: 0 0 6px rgba(63,81,181,0.4);
+}
+
+.search-box button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #3f51b5;
+  border: none;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.search-box button:hover {
+  background:#283593;
+}
 /* Books */
 .features { max-width:1100px; margin:40px auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px; padding:0 20px; }
 .feature { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); text-align:center; display:flex; flex-direction:column; gap:10px; }
@@ -117,44 +147,26 @@ header { background:#3f51b5; color:white; padding:15px 20px; position:sticky; to
 }
 .floating-cart:hover { background:#fb8c00; }
 
-footer { text-align:center; background:#3f51b5; color:white; padding:15px; margin-top:40px; }
+.feature {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* يوزع العناصر ويضمن أن الزر يكون في الأسفل */
+  gap: 10px;
+  height: 100%; /* يضمن أن كل بطاقة تأخذ نفس الطول داخل الشبكة */
+}
+
+.feature .btn {
+  margin-top: auto; /* يدفع الزر لأسفل البطاقة */
+}
 </style>
 </head>
 <body>
 
-<header>
-    <nav class="navbar">
-        <h1>BookSwap</h1>
-        <ul class="nav-links">
-            <li><a href="index.php">Home</a></li>
-            <li><a href="view_books.php">All Books</a></li>
-            <li><a href="cart.php">Cart (<?= $cart_count ?>)</a></li>
-            <?php if ($username): ?>
-                <li><a href="add_book.php">Add Book</a></li>
-                <li class="user-dropdown">
-                    <a href="#" class="user-btn">
-                        <i class="fas fa-user-circle"></i> <?= htmlspecialchars($username) ?> ▼
-                    </a>
-                                       <div class="user-dropdown-content">
-                        <p style="margin:0 0 10px; font-size:14px; color:#fff;">
-                            <i class="fas fa-envelope"></i> <?= htmlspecialchars($user_email) ?>
-                        </p>
-                        <a href="profile.php"><i class="fas fa-id-card"></i> Profile</a>
-                        <a href="chat.php"><i class="fas fa-comments"></i> Messages</a>
-                        <a href="cart.php"><i class="fas fa-shopping-cart"></i> Cart (<?= $cart_count ?>)</a>
-                        <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                    </div>
-                </li>
-            <?php else: ?>
-                <li>
-                    <a href="login.php" class="login-button" style="background:#283593; border-radius:20px; padding:6px 12px;">
-                        <i class="fas fa-user"></i> Login
-                    </a>
-                </li>
-            <?php endif; ?>
-        </ul>
-    </nav>
-</header>
 
 
 <section class="main-content">
@@ -171,32 +183,40 @@ footer { text-align:center; background:#3f51b5; color:white; padding:15px; margi
 
     <?php if ($books && $books->num_rows > 0): ?>
         <?php while($row = $books->fetch_assoc()): ?>
-            <?php $imageFile = !empty($row['image']) ? "uploads/".$row['image'] : "uploads/"; ?>
-            <div class="feature">
-                <img src="<?= htmlspecialchars($imageFile) ?>" alt="Book Cover">
-                <h3>
-                    <a href="book_details.php?id=<?= (int)$row['id'] ?>" style="text-decoration:none; color:#1a237e;">
-                        <?= htmlspecialchars($row['title']) ?>
-                    </a>
-                </h3>
-                <p>Author: <?= htmlspecialchars($row['author']) ?></p>
-                <?php if(!empty($row['edition'])): ?>
-                    <p>Edition: <?= htmlspecialchars($row['edition']) ?></p>
-                <?php endif; ?>
-                <p class="price">Price: <?= number_format($row['price'],2) ?> SAR</p>
+            <?php 
+    $imageFile = !empty($row['image']) 
+        ? "uploads/".$row['image'] 
+        : "assets/no-image.png"; 
+  ?>
 
-                <!-- Add to Cart button -->
-                <form method="POST" action="add_to_cart.php" style="margin:0;">
-                    <input type="hidden" name="book_id" value="<?= (int)$row['id'] ?>">
-                    <button type="submit" name="add_to_cart" class="btn">Add to Cart</button>
-                </form>
-            </div>
+          <div class="feature">
+            <img src="<?= htmlspecialchars($imageFile) ?>" alt="Book Cover">
+            <h3>
+                <a href="book_details.php?id=<?= (int)$row['id'] ?>" style="text-decoration:none; color:#1a237e;">
+                    <?= htmlspecialchars($row['title']) ?>
+                </a>
+            </h3>
+            <p>Author: <?= htmlspecialchars($row['author']) ?></p>
+            <?php if(!empty($row['edition'])): ?>
+                <p>Edition: <?= htmlspecialchars($row['edition']) ?></p>
+            <?php endif; ?>
+            <p class="price">Price: <?= number_format($row['price'],2) ?> SAR</p>
+            <p class="added-by">Added by: <?= htmlspecialchars($row['user_name']) ?></p>
+
+            <!-- Contact seller button -->
+            <a href="chat.php?user=<?= (int)$row['user_id'] ?>&book=<?= (int)$row['id'] ?>" class="btn">Contact Seller</a>
+
+            <!-- Add to Cart button -->
+            <form method="POST" action="add_to_cart.php" style="margin:0;">
+                <input type="hidden" name="book_id" value="<?= (int)$row['id'] ?>">
+                <button type="submit" name="add_to_cart" class="btn"> Add to Cart</button>
+            </form>
+          </div>
         <?php endwhile; ?>
     <?php else: ?>
         <p style="grid-column:1/-1; text-align:center;">No results found.</p>
     <?php endif; ?>
 </section>
-
 <!-- Floating Cart button -->
 <a class="floating-cart" href="cart.php">Cart (<?= $cart_count ?>)</a>
 
@@ -225,3 +245,4 @@ if (dropdown && userBtn) {
 
 </body>
 </html>
+<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
