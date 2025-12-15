@@ -250,15 +250,34 @@ $grand_total = $total + $vat;
 
 <div class="cart-buttons">
 <?php if ($user_id): ?>
-<a href="checkout.php" class="btn proceed">Proceed to Purchase</a>
+    <?php if ($result && $result->num_rows > 0): ?>
+        <!-- إذا فيه منتجات -->
+        <a href="checkout.php" class="btn proceed">Proceed to Purchase</a>
+    <?php else: ?>
+        <!-- إذا السلة فاضية -->
+        <button type="button" class="btn proceed" onclick="showPopup()">Proceed to Purchase</button>
+    <?php endif; ?>
 <?php else: ?>
-<a href="login.php" class="btn proceed">Login to Continue</a>
+    <a href="login.php" class="btn proceed">Login to Continue</a>
 <?php endif; ?>
-<a href="books.php" class="btn back">Return to Shopping</a>
+    <a href="home.php" class="btn back">Return to Shopping</a>
+</div>
+<div class="popup" id="emptyCartPopup">
+  <div class="popup-content">
+    <h4>Your cart is empty</h4>
+    <p>Please add books before proceeding to purchase.</p>
+    <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
+      <a href="home.php" class="btn back">Return to Shopping</a>
+    </div>
+  </div>
 </div>
 
-</div>
-</div>
+<script>
+function showPopup() {
+  document.getElementById('emptyCartPopup').style.display = 'flex';
+}
+</script>
+
 
 </body>
 </html>

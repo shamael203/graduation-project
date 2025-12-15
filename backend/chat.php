@@ -61,9 +61,24 @@ $sidebar = $conn->query("
 ");
 ?>
 <style>
-body {margin:0;font-family:Arial,sans-serif;background:#fff;}
-.chat-layout {display:flex;height:100vh;width:100%;}
-.chat-sidebar {width:250px;background:#f9f9f9;padding:20px;border-right:1px solid #ddd;overflow-y:auto;}
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#fff;
+  overflow:hidden; /* يمنع ظهور Scroll للصفحة */
+}
+.chat-layout {
+  display:flex;
+  height:calc(100vh - 120px); /* ناقص الهيدر والفوتر */
+  width:100%;
+}
+.chat-sidebar {
+  width:250px;
+  background:#f9f9f9;
+  padding:20px;
+  border-right:1px solid #ddd;
+  overflow-y:auto;
+}
 .chat-sidebar h3 {margin-bottom:10px;font-size:16px;color:#333;}
 .chat-sidebar ul {list-style:none;padding:0;margin:0;}
 .chat-sidebar li {border-bottom:1px solid #eee;padding:10px 0;}
@@ -74,7 +89,14 @@ body {margin:0;font-family:Arial,sans-serif;background:#fff;}
 .avatar {width:32px;height:32px;border-radius:50%;background:#007bff;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;margin-right:8px;}
 .chat-main {flex:1;display:flex;flex-direction:column;}
 .chat-header {background:#007bff;color:white;padding:16px;}
-.chat-window {flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.chat-window {
+  flex:1;
+  padding:16px;
+  overflow-y:auto; /* Scroll داخلي فقط */
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
 .message {max-width:70%;padding:10px 14px;border-radius:16px;font-size:14px;}
 .message.user {align-self:flex-end;background:#dcf8c6;}
 .message.other {align-self:flex-start;background:#eee;}
@@ -138,7 +160,7 @@ body {margin:0;font-family:Arial,sans-serif;background:#fff;}
 <?php include 'footer.php'; ?>
 
 <script>
-  // ينزل تلقائيًا لآخر رسالة
+  // ينزل تلقائيًا لآخر رسالة داخل نافذة الدردشة فقط
   function scrollToBottom() {
     var chatWindow = document.querySelector('.chat-window');
     if (chatWindow) {
@@ -146,10 +168,8 @@ body {margin:0;font-family:Arial,sans-serif;background:#fff;}
     }
   }
 
-  // عند تحميل الصفحة
   window.onload = scrollToBottom;
 
-  // بعد إرسال الرسالة
   document.querySelector('.chat-input').addEventListener('submit', function() {
     setTimeout(scrollToBottom, 100);
   });
