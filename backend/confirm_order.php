@@ -1,6 +1,8 @@
+
 <?php
 session_start();
 include 'connect.php';
+include 'header.php'; // الهيدر الموحد
 
 $user_id = $_SESSION['user_id'] ?? 1;
 
@@ -79,5 +81,9 @@ p { font-size:16px; color:#333; margin:10px 0;}
         <a href="index.php">🏠 العودة للرئيسية</a>
     </div>
 </div>
+
+<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->
+
 </body>
+</html>
 </html>

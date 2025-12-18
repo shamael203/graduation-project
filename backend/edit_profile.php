@@ -9,13 +9,8 @@ include 'connect.php';
 
 $user_id = $_SESSION['user_id'];
 
-$uploadDir = "uploads/";
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
-}
-
-// جلب البيانات الحالية
-$stmt = $conn->prepare("SELECT bio, phone, avatar FROM profile WHERE user_id = ?");
+// Get current profile data
+$stmt = $conn->prepare("SELECT bio, phone FROM profile WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $profile = $stmt->get_result()->fetch_assoc();
@@ -23,80 +18,72 @@ $stmt->close();
 
 $errors = [];
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
     $bio = $_POST["bio"];
     $phone = $_POST["phone"];
-    $avatarPath = $profile["avatar"] ?? null;
 
-    // رفع الصورة إن وجدت
-    if (!empty($_FILES["avatar"]["name"])) {
-        $file = $_FILES["avatar"];
-        $allowed = ['image/jpeg','image/png'];
+    // Check if profile exists
+    $check = $conn->prepare("SELECT user_id FROM profile WHERE user_id = ?");
+    $check->bind_param("i", $user_id);
+    $check->execute();
+    $exists = $check->get_result()->num_rows > 0;
+    $check->close();
 
-        if (!in_array(mime_content_type($file["tmp_name"]), $allowed)) {
-            $errors[] = "نوع الصورة غير مسموح";
-        } else {
-            $ext = pathinfo($file["name"], PATHINFO_EXTENSION);
-            $newName = $uploadDir . "avatar_" . $user_id . "_" . time() . "." . $ext;
-
-            move_uploaded_file($file["tmp_name"], $newName);
-            $avatarPath = $newName;
-        }
+    if ($exists) {
+        $stmt = $conn->prepare("UPDATE profile SET bio=?, phone=? WHERE user_id=?");
+        $stmt->bind_param("ssi", $bio, $phone, $user_id);
+    } else {
+        $stmt = $conn->prepare("INSERT INTO profile (bio, phone, user_id) VALUES (?, ?, ?)");
+        $stmt->bind_param("ssi", $bio, $phone, $user_id);
     }
 
-    if (empty($errors)) {
-
-        // هل الملف موجود سابقاً؟
-        $check = $conn->prepare("SELECT user_id FROM profile WHERE user_id = ?");
-        $check->bind_param("i", $user_id);
-        $check->execute();
-        $exists = $check->get_result()->num_rows > 0;
-        $check->close();
-
-        if ($exists) {
-            $stmt = $conn->prepare("UPDATE profile SET bio=?, phone=?, avatar=? WHERE user_id=?");
-            $stmt->bind_param("sssi", $bio, $phone, $avatarPath, $user_id);
-        } else {
-            $stmt = $conn->prepare("INSERT INTO profile (bio, phone, avatar, user_id) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("sssi", $bio, $phone, $avatarPath, $user_id);
-        }
-
-        $stmt->execute();
+    if ($stmt->execute()) {
         $stmt->close();
-
         header("Location: profile.php");
         exit();
+    } else {
+        $errors[] = "❌ Database error: " . $stmt->error;
+        $stmt->close();
     }
 }
 ?>
+<?php include 'header.php'; ?> <!-- Common header -->
+
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>تعديل البروفايل</title>
+<title>Edit Profile</title>
 <style>
-body { direction: rtl; font-family: Arial; }
+body { font-family: Arial, sans-serif; background:#f9f9f9; }
 form { width: 60%; margin: auto; background:white; padding:20px; border-radius:8px; }
-input, textarea { width: 100%; margin-top: 8px; padding: 8px; }
-button { margin-top: 10px; padding:10px; background:#28a745; color:white; border:none; border-radius:5px; }
+input, textarea { width: 100%; margin-top: 8px; padding: 8px; border:1px solid #ccc; border-radius:5px; }
+button { margin-top: 10px; padding:10px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer; }
+.alert { padding:10px; margin:10px auto; border-radius:5px; text-align:center; }
+.alert.error { background:#ffe5e5; color:#b00020; }
 </style>
 </head>
 <body>
 
-<h2 style="text-align:center">تعديل البيانات</h2>
+<h2 style="text-align:center">Edit Profile</h2>
 
-<form method="POST" enctype="multipart/form-data">
-    <label>الهاتف:</label>
-    <input type="text" name="phone" value="<?= $profile['phone'] ?? '' ?>">
+<!-- Show errors -->
+<?php if (!empty($errors)): ?>
+    <?php foreach ($errors as $err): ?>
+        <div class="alert error"><?= htmlspecialchars($err) ?></div>
+    <?php endforeach; ?>
+<?php endif; ?>
 
-    <label>نبذة:</label>
-    <textarea name="bio"><?= $profile['bio'] ?? '' ?></textarea>
+<form method="POST">
+    <label>📞 Phone:</label>
+    <input type="text" name="phone" value="<?= htmlspecialchars($profile['phone'] ?? '') ?>">
 
-    <label>الصورة الشخصية:</label>
-    <input type="file" name="avatar">
+    <label>📝 Bio:</label>
+    <textarea name="bio"><?= htmlspecialchars($profile['bio'] ?? '') ?></textarea>
 
-    <button type="submit">حفظ التغييرات</button>
+    <button type="submit">💾 Save Changes</button>
 </form>
+
+<?php include 'footer.php'; ?> <!-- Common footer -->
 
 </body>
 </html>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- مضيف: localhost
--- وقت الجيل: 06 ديسمبر 2025 الساعة 21:53
+-- وقت الجيل: 16 ديسمبر 2025 الساعة 20:16
 -- إصدار الخادم: 8.0.43
 -- نسخة PHP: 8.2.29
 
@@ -34,15 +34,19 @@ CREATE TABLE `books` (
   `title` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `author` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` int NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
+  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `category` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- إرجاع أو استيراد بيانات الجدول `books`
 --
 
-INSERT INTO `books` (`edition`, `price`, `id`, `title`, `author`, `user_id`, `image`) VALUES
-('الطبعه الثانية', 99, 19, 'عصر التنقيب في البيانات عبر تقنيات الذكاء الاصطناعي التطور – التحديات الفنية والقانونية – العيوب خوارزمية الذكاء الاصطناعي دراسة مقارنة', ' احمد حسين علي', 14, '1765048450_3ea13b05-6e1a-4de8-a80e-1c3849436b98-thumbnail-1000x1000-70.jpg');
+INSERT INTO `books` (`edition`, `price`, `id`, `title`, `author`, `user_id`, `image`, `category`) VALUES
+('الطبعه الثانية', 99, 19, 'عصر التنقيب في البيانات عبر تقنيات الذكاء الاصطناعي التطور – التحديات الفنية والقانونية – العيوب خوارزمية الذكاء الاصطناعي دراسة مقارنة', ' احمد حسين علي', 14, '1765048450_3ea13b05-6e1a-4de8-a80e-1c3849436b98-thumbnail-1000x1000-70.jpg', NULL),
+('2', 60, 31, 'effective academic writing intro', 'Philip Kotler, Gary Armstrong', 19, '1765680671_7EYNyxGELBAq0CWyAdCx3ftZO5lbjrSyPmky1IYn.webp', NULL),
+('2', 90, 32, 'english vocabulary in usa 3rd edition', 'Philip Kotler', 19, '1765680725_t3IX9XGjpPz7i71NylCMFbzG6kbO8AT56EAHGb7Y.webp', NULL),
+('1', 65, 33, 'الاجراءات الجزئية', 'د.فهد الطريسي', 20, '1765914525_a2dc1cc1-32b3-478b-86ee-b17a95e9c3ad.jpg', NULL);
 
 -- --------------------------------------------------------
 
@@ -57,13 +61,6 @@ CREATE TABLE `cart` (
   `quantity` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- إرجاع أو استيراد بيانات الجدول `cart`
---
-
-INSERT INTO `cart` (`id`, `user_id`, `book_id`, `quantity`) VALUES
-(1, 14, 19, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -76,8 +73,20 @@ CREATE TABLE `messages` (
   `receiver_id` int NOT NULL,
   `message` text COLLATE utf8mb4_general_ci NOT NULL,
   `date` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `book_id` int NOT NULL
+  `book_id` int DEFAULT NULL,
+  `seen` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `messages`
+--
+
+INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `date`, `book_id`, `seen`) VALUES
+(29, 14, 19, 'السلام عليكم ', '2025-12-15 06:17:24', NULL, 1),
+(32, 19, 14, 'وعليكم السلام', '2025-12-15 06:50:08', NULL, 1),
+(33, 14, 19, 'وعليكم السلام', '2025-12-15 07:14:39', NULL, 0),
+(34, 20, 14, 'السلام عليكم', '2025-12-16 22:43:47', NULL, 1),
+(35, 14, 20, 'وعليكم السلام', '2025-12-16 22:47:46', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -103,7 +112,13 @@ CREATE TABLE `orders` (
 INSERT INTO `orders` (`id`, `user_id`, `name`, `email`, `address`, `payment_method`, `total_amount`, `created_at`) VALUES
 (1, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:50:17'),
 (2, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:51:15'),
-(3, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:51:18');
+(3, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:51:18'),
+(4, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 21:53:34'),
+(5, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-06 22:17:57'),
+(6, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 113.85, '2025-12-13 22:05:08'),
+(7, 19, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'card', 0.00, '2025-12-14 02:50:35'),
+(8, 14, 'shmael sultan', 'shamael1423@gmail.com', 'المدينة المنوره ', 'cash', 69.00, '2025-12-15 04:26:41'),
+(9, 20, 'Arwa', 'Arwa12@gmail.cim', 'المدينة المنوره ', 'cash', 113.85, '2025-12-16 19:41:34');
 
 -- --------------------------------------------------------
 
@@ -118,6 +133,17 @@ CREATE TABLE `order_items` (
   `quantity` int NOT NULL,
   `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `book_id`, `quantity`, `price`) VALUES
+(1, 4, 19, 1, 99.00),
+(2, 5, 19, 1, 99.00),
+(3, 6, 19, 1, 99.00),
+(4, 8, 31, 1, 60.00),
+(5, 9, 19, 1, 99.00);
 
 -- --------------------------------------------------------
 
@@ -146,15 +172,18 @@ CREATE TABLE `profile` (
   `user_id` int NOT NULL,
   `bio` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `phone` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `avatar` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+  `avatar` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `join_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `location` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- إرجاع أو استيراد بيانات الجدول `profile`
 --
 
-INSERT INTO `profile` (`id`, `user_id`, `bio`, `phone`, `avatar`) VALUES
-(1, 14, '', '0536910118', 'uploads/avatar_14_1765048303.png');
+INSERT INTO `profile` (`id`, `user_id`, `bio`, `phone`, `avatar`, `join_date`, `location`) VALUES
+(1, 14, '', '0536910118', 'uploads/avatar_14_1765664903.png', '2025-12-14 00:24:38', NULL),
+(2, 19, '', '', 'avatars/avatar_19_1765678651.webp', '2025-12-14 05:10:29', NULL);
 
 -- --------------------------------------------------------
 
@@ -176,19 +205,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`password`, `created_at`, `id`, `name`, `email`) VALUES
 ('$2y$10$zg58cT9rCZ.eb2QA8RrpY.r0KuJlLO.PX4fqRpl19b.UFxpsu5yXS', '2025-10-08 22:58:23', 1, 'Shamael sultan', 'shamaelm2003@gmail.com'),
-('$2y$10$kugFgQZBoqgdPiVLilRnKuzOLUBxEgAH7sO3LGCcHkf98NqaQUb6W', '2025-10-08 22:58:31', 2, '', 'Shamael'),
-('$2y$10$bRw76/x/aLL/sFwbXFTF3e0gvaTSk2XJ//6KhX6ngTAFP0eeEeFHC', '2025-10-10 09:30:31', 7, 'Shamael sultan', 'shamawwelm2003@gmail.com'),
-('$2y$10$xLr52g5JtUwcgb5m6oKwgOG2a4TidsjF9yF4K1j0ZadRbADrwfVkW', '2025-10-10 09:38:26', 8, 'Shamael sultan', 'shamaelrrm2003@gmail.com'),
-('$2y$10$PhMsP.5igCKj3F/5cXz6quljlnxXl4Hk7qqD4OO.hmA05CzBdbplO', '2025-10-10 10:03:07', 9, 'SA', 'shamaelmR2003@gmail.com'),
-('$2y$10$fe4G5Rzj9VXjsglvdjDwIetoVq5ztC88ROqbMdi4mQaR8mCIBnByu', '2025-10-14 07:11:09', 10, 'Shamael sultan', 'ahd12@gmail.com'),
-('$2y$10$XzwjvzixgDMC1TkplPsTje8954VK1aTa4gp8B7p.Sx/x8NPRAc.6O', '2025-10-14 07:20:27', 11, 'Shamael sultan', 'ddff1423@gmail.com'),
-('$2y$10$zl85RuBWBecHawsnvzYKQ.EUwDTRwktTHOhMo8JW71/5cp4PFFYkK', '2025-10-14 07:25:08', 12, 'Shamael sultan', 'jjii1423@gmail.com'),
-('$2y$10$tiZ1wUKYLERUpqYhQLR9TeSe69aMMJuKyQa2BxLgvy.cr4vGdWhTi', '2025-10-14 08:38:36', 13, 'Shamael sultan', '1423@gmail.com'),
 ('$2y$10$mOnZv9ur7MaZf4vkeGMM0.8CD7oTQRZXllybRVQDertIZ.UGG.R4q', '2025-10-14 08:49:22', 14, 'Shamael sultan', 'shamael1423@gmail.com'),
-('$2y$10$hM/25WLlgNB773BGEPSUCeAietiuwYftqRZjlokfxSEG0D5V9cjae', '2025-10-15 08:22:59', 15, 'Shamael sultan', 'shama777el1423@gmail.com'),
-('$2y$10$nh/BX15Fm3eSKfgfcoCuLuQzt9CZQWHB4FsYlaqVM3KBsdGe5K5QS', '2025-10-15 08:45:45', 16, 'Shamael sultan', 'shamael45@gmail.com'),
-('$2y$10$jFZ9bRqRyHE89L56oXzxwuzNqEJYf.sS7ijMQRdoUWS3IX46KE6I.', '2025-11-15 14:43:50', 17, 'Shamael sultan', 'shamaellll1423@gmail.com'),
-('$2y$10$DGFacST0efd.N11VOZO2VuGyyipzLZk5psm5jsgiO/YcGSpRfw0lq', '2025-11-15 15:00:25', 18, 'Shamael sultan', 'sh8@gmail.com');
+('$2y$10$sZPM9VPvAS1Q8DadqBi6suZBlVI3dwQ0546XoLRSCgjkhq5FXbLJK', '2025-12-13 23:53:51', 19, 'ammar', 'amaaar.1427@gmail.com'),
+('$2y$10$Z6mbOegJ2CivOwgDvR6WW.bUf9YXTu41Q84zZS5FKYo.UG7gMwP/m', '2025-12-16 19:40:03', 20, 'Arwa', 'Arwa12@gmail.com');
 
 --
 -- Indexes for dumped tables
@@ -260,31 +279,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -296,13 +315,13 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `profile`
 --
 ALTER TABLE `profile`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- القيود المفروضة على الجداول الملقاة
@@ -351,12 +370,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-CREATE TABLE books (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    edition VARCHAR(100) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    user_id INT
-);

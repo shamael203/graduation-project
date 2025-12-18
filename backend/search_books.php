@@ -1,3 +1,4 @@
+
 <?php
 // الاتصال بقاعدة البيانات
 $host = "localhost";
@@ -8,6 +9,9 @@ $dbname = "book_exchange";
 $conn = new mysqli($host, $user, $password, $dbname);
 session_start();
 include 'connect.php';
+
+// تضمين الهيدر
+include 'header.php';
 
 // التحقق من الاتصال
 if ($conn->connect_error) {
@@ -60,32 +64,7 @@ h2 {
 }
 
 /* شريط البحث */
-.search-box {
-  display: flex;
-  margin-bottom: 25px;
-}
-
-.search-box input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid #c7c7c7;
-  font-size: 16px;
-  border-radius: 8px 0 0 8px;
-}
-
-.search-box button {
-  padding: 12px 18px;
-  background: #3f51b5;
-  color: white;
-  border: none;
-  font-size: 16px;
-  border-radius: 0 8px 8px 0;
-  cursor: pointer;
-}
-
-.search-box button:hover {
-  background: #2c3e9a;
-}
+c:\Users\shama\Desktop\graduation-project
 
 /* بطاقة الكتاب */
 .book-card {
@@ -142,3 +121,7 @@ $conn->close();
 
 </body>
 </html>
+<?php
+// تضمين الفوتر
+include 'footer.php';
+?>

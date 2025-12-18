@@ -3,19 +3,19 @@ session_start();
 session_unset();
 session_destroy();
 
-// تحويل تلقائي بعد 3 ثواني
+// Auto redirect after 3 seconds
 header("refresh:3;url=home.php");
 ?>
 
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>تسجيل الخروج</title>
+  <title>Logout</title>
   <style>
     body {
       background: linear-gradient(135deg, #f0f4ff, #e0ebff);
-      font-family: 'Tajawal', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -48,7 +48,9 @@ header("refresh:3;url=home.php");
 </head>
 <body>
 
-  <p>تم تسجيل خروجك بنجاح</p>
- 
+  <p>You have successfully logged out</p>
+
+
+  
 </body>
 </html>

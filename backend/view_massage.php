@@ -1,37 +1,72 @@
+
 <?php
 session_start();
 include 'connect.php';
-if (empty($_SESSION['user_id'])) { header('Location: login.php'); exit; }
+
+if (empty($_SESSION['user_id'])) { 
+    header('Location: login.php'); 
+    exit; 
+}
+
 $me = (int) $_SESSION['user_id'];
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-if ($id <= 0) { echo "Message not found"; exit; }
+if ($id <= 0) { 
+    echo "Message not found"; 
+    exit; 
+}
 
 // جلب الرسالة والتأكد أن المستلم هو المستخدم
-$stmt = $pdo->prepare("
+$stmt = $conn->prepare("
   SELECT m.*, u.name AS sender_name
   FROM messages m
   JOIN users u ON u.id = m.sender_id
-  WHERE m.id = :id AND m.receiver_id = :me
+  WHERE m.id = ? AND m.receiver_id = ?
 ");
-$stmt->execute([':id' => $id, ':me' => $me]);
-$msg = $stmt->fetch();
-if (!$msg) { echo "لا تملك صلاحية عرض هذه الرسالة."; exit; }
+$stmt->bind_param("ii", $id, $me);
+$stmt->execute();
+$result = $stmt->get_result();
+$msg = $result->fetch_assoc();
+$stmt->close();
+
+if (!$msg) { 
+    echo "لا تملك صلاحية عرض هذه الرسالة."; 
+    exit; 
+}
 
 // وسمها كمقروء إن لم تكن كذلك
 if (!$msg['is_read']) {
-  $u = $pdo->prepare("UPDATE messages SET is_read = 1 WHERE id = :id");
-  $u->execute([':id' => $id]);
+    $u = $conn->prepare("UPDATE messages SET is_read = 1 WHERE id = ?");
+    $u->bind_param("i", $id);
+    $u->execute();
+    $u->close();
 }
 ?>
+
+<?php include 'header.php'; ?>
+
 <!doctype html>
 <html lang="ar">
-<head><meta charset="utf-8"><title>عرض الرسالة</title></head>
+<head>
+
+@@ -48,10 +51,14 @@ if (!$msg['is_read']) {
+  <title>عرض الرسالة</title>
+</head>
 <body>
   <h2><?php echo htmlspecialchars($msg['subject'] ?: '(بدون عنوان)'); ?></h2>
   <p>من: <?php echo htmlspecialchars($msg['sender_name']); ?> — <?php echo $msg['created_at']; ?></p>
   <hr>
   <div><?php echo nl2br(htmlspecialchars($msg['body'])); ?></div>
   <p><a href="inbox.php">عودة لصندوق الوارد</a></p>
+  <div class="container">
+      <h2><?php echo htmlspecialchars($msg['subject'] ?: '(بدون عنوان)'); ?></h2>
+      <p>من: <?php echo htmlspecialchars($msg['sender_name']); ?> — <?php echo $msg['created_at']; ?></p>
+      <hr>
+      <div><?php echo nl2br(htmlspecialchars($msg['body'])); ?></div>
+      <p><a href="inbox.php">عودة لصندوق الوارد</a></p>
+  </div>
 </body>
 </html>
+</html>
+
+<?php include 'footer.php'; ?>
