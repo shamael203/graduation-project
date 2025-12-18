@@ -163,6 +163,7 @@ h2 { color:#1a237e; text-align:center; margin-bottom:20px; }
                         <input type="hidden" name="book_id" value="<?= (int)$row['id'] ?>">
                         <button type="submit" name="add_to_cart">إضافة إلى السلة</button>
                     </form>
+                    <a href="edit_book.php?id=<?= $row['id'] ?>">✏️ تعديل</a>
                 </div>
             </div>
         <?php endwhile; ?>
