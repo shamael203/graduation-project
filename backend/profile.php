@@ -173,6 +173,7 @@ header, footer {
   <div class="buttons">
     <a href="edit_profile.php" class="edit-btn">✏️ Edit Profile</a>
     <a href="add_book.php" class="add-book-btn">➕ Add New Book</a>
+    <a class="button" href="my_orders.php">📦 My Order</a>
   </div>
 
   <!-- Books section -->
