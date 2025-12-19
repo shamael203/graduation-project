@@ -89,7 +89,7 @@ header, footer {
 
 /* Buttons */
 .buttons { margin:20px 0; }
-.edit-btn, .add-book-btn {
+.edit-btn, .add-book-btn, .orders-btn {
   display:inline-block;
   margin-right:10px;
   padding:10px 18px;
@@ -100,8 +100,13 @@ header, footer {
 }
 .edit-btn { background:#3f51b5; }
 .edit-btn:hover { background:#283593; }
+
 .add-book-btn { background:#d32f2f; }
 .add-book-btn:hover { background:#b71c1c; }
+
+/* NEW: My Orders button */
+.orders-btn { background:#009688; }
+.orders-btn:hover { background:#00796b; }
 
 /* Books grid */
 .books-grid {
@@ -145,15 +150,6 @@ header, footer {
   margin-top:10px;
 }
 .book-card button:hover { background:#b71c1c; }
-
-/* About section */
-.about {
-  margin-top:40px;
-  padding:20px;
-  border-top:2px solid #eee;
-}
-.about h3 { margin-top:0; color:#3f51b5; }
-.about p { white-space:pre-wrap; font-size:14px; color:#444; }
 </style>
 </head>
 <body>
@@ -173,7 +169,7 @@ header, footer {
   <div class="buttons">
     <a href="edit_profile.php" class="edit-btn">✏️ Edit Profile</a>
     <a href="add_book.php" class="add-book-btn">➕ Add New Book</a>
-    <a class="button" href="my_orders.php">📦 My Order</a>
+    <a href="my_orders.php" class="orders-btn">📦 My Orders</a>
   </div>
 
   <!-- Books section -->
@@ -183,21 +179,34 @@ header, footer {
     <div class="books-grid">
       <?php while($book = $books->fetch_assoc()): ?>
         <div class="book-card">
+
           <?php if (!empty($book['image'])): ?>
             <img src="uploads/<?= htmlspecialchars($book['image']) ?>" alt="Book Cover">
           <?php endif; ?>
+
           <p><strong><?= htmlspecialchars($book['title']) ?></strong></p>
           <p><?= htmlspecialchars($book['author']) ?></p>
+
           <?php if(!empty($book['edition'])): ?>
             <p>Edition: <?= htmlspecialchars($book['edition']) ?></p>
           <?php endif; ?>
+
           <p style="color:#3f51b5; font-weight:bold;"><?= htmlspecialchars($book['price']) ?> SAR</p>
 
+          <!-- Edit button -->
+          <a href="edit_book.php?id=<?= $book['id'] ?>" 
+             style="display:block; margin-top:10px; background:#3f51b5; color:white; 
+                    padding:8px 12px; border-radius:6px; text-decoration:none; font-weight:bold;">
+             ✏️ Edit
+          </a>
+
           <!-- Delete button -->
-          <form method="POST" action="profile.php" onsubmit="return confirm('Are you sure you want to delete this book?');">
+          <form method="POST" action="profile.php" 
+                onsubmit="return confirm('Are you sure you want to delete this book?');">
             <input type="hidden" name="book_id" value="<?= (int)$book['id'] ?>">
             <button type="submit" name="delete_book">🗑️ Delete</button>
           </form>
+
         </div>
       <?php endwhile; ?>
     </div>

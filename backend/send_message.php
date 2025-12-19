@@ -44,7 +44,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send'])) {
     echo "Invalid request.";
 }
 ?>
-
-// تضمين الفوتر
-include 'footer.php';
-?>
+<?php include 'footer.php'; ?> <!-- الفوتر الموحد -->

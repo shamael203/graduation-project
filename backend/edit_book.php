@@ -1,22 +1,24 @@
 <?php
 session_start();
-include 'connect.php';
+include "connect.php";
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
+    die("You must log in first");
 }
 
 $user_id = $_SESSION['user_id'];
+$message = "";
 
+// ----------------------
+// 1) جلب بيانات الكتاب
+// ----------------------
 if (!isset($_GET['id'])) {
     die("Book not found");
 }
 
-$book_id = (int)$_GET['id'];
+$book_id = intval($_GET['id']);
 
-// جلب الكتاب والتأكد أنه تابع للمستخدم
-$stmt = $conn->prepare("SELECT * FROM books WHERE id = ? AND user_id = ?");
+$stmt = $conn->prepare("SELECT * FROM books WHERE id=? AND user_id=?");
 $stmt->bind_param("ii", $book_id, $user_id);
 $stmt->execute();
 $book = $stmt->get_result()->fetch_assoc();
@@ -25,59 +27,126 @@ if (!$book) {
     die("You are not allowed to edit this book");
 }
 
-// حفظ التعديل
+// ----------------------
+// 2) حفظ التعديل
+// ----------------------
 if (isset($_POST['update'])) {
-    $title = $_POST['title'];
-    $author = $_POST['author'];
-    $price = $_POST['price'];
-    $description = $_POST['description'];
 
+    $title   = trim($_POST['title']);
+    $author  = trim($_POST['author']);
+    $edition = trim($_POST['edition']);
+    $price   = floatval($_POST['price']);
+
+    // الصورة القديمة
+    $oldImage = $book['image'];
+    $newImage = $oldImage;
+
+    // إذا رفع صورة جديدة
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+
+        $targetDir = "uploads/";
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+
+        $extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $allowed = ['jpg','jpeg','png','gif','webp'];
+
+        if (in_array(strtolower($extension), $allowed)) {
+
+            $fileName = time() . "_" . basename($_FILES['image']['name']);
+            $targetFile = $targetDir . $fileName;
+
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+
+                // حذف الصورة القديمة إذا موجودة
+                if (!empty($oldImage) && file_exists("uploads/" . $oldImage)) {
+                    unlink("uploads/" . $oldImage);
+                }
+
+                $newImage = $fileName;
+
+            } else {
+                $message = "<div class='alert error'>❌ Failed to upload image</div>";
+            }
+
+        } else {
+            $message = "<div class='alert error'>❌ Unsupported image format</div>";
+        }
+    }
+
+    // تحديث البيانات
     $update = $conn->prepare("
         UPDATE books 
-        SET title = ?, author = ?, price = ?, description = ?
-        WHERE id = ? AND user_id = ?
+        SET title=?, author=?, edition=?, price=?, image=?
+        WHERE id=? AND user_id=?
     ");
-    $update->bind_param("ssd sii", $title, $author, $price, $description, $book_id, $user_id);
-    $update->execute();
 
-    header("Location: view_books.php");
-    exit;
+    $update->bind_param("sssdsii", $title, $author, $edition, $price, $newImage, $book_id, $user_id);
+
+    if ($update->execute()) {
+        header("Location: profile.php");
+        exit;
+    } else {
+        $message = "<div class='alert error'>❌ Error: " . $conn->error . "</div>";
+    }
 }
 ?>
-
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title> Editing the book</title>
+<meta charset="utf-8">
+<title>Edit Book</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { direction: rtl; font-family: Arial; background:#f5f5f5; }
-.box { width:420px; margin:40px auto; background:#fff; padding:20px; border-radius:10px; }
-input, textarea, button { width:100%; margin-bottom:10px; padding:8px; }
-button { background:#4CAF50; color:#fff; border:none; }
+body { font-family: Tahoma, sans-serif; background:#f0f4ff; margin:0; }
+.container { background:#fff; padding:35px 40px; border-radius:16px; max-width:440px; width:100%; margin:40px auto; box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+h2 { text-align:center; color:#1a237e; margin-bottom:25px; }
+label { display:block; margin-bottom:6px; font-weight:600; }
+input { width:100%; padding:10px; margin-bottom:18px; border:1px solid #ccc; border-radius:8px; font-size:15px; }
+input:focus { border-color:#3f51b5; outline:none; }
+button { width:100%; padding:12px; background:#3f51b5; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
+button:hover { background:#2c3e9a; }
+.alert { padding:12px; margin-bottom:20px; border-radius:10px; font-weight:600; text-align:center; }
+.alert.error { background:#ffe5e5; color:#b00020; border:1px solid #f5b7b1; }
+.book-img { width:100%; border-radius:10px; margin-bottom:15px; }
 </style>
 </head>
 <body>
 
-<div class="box">
-<h3> Editing the book </h3>
+<?php include 'header.php'; ?>
 
-<form method="POST">
-    <label> Book title</label>
-    <input type="text" name="title" value="<?= htmlspecialchars($book['title']) ?>" required>
+<div class="container">
+  <h2>✏️ Edit Book</h2>
+  <?php echo $message; ?>
 
-    <label>Author name</label>
-    <input type="text" name="author" value="<?= htmlspecialchars($book['author']) ?>" required>
+  <!-- عرض الصورة الحالية -->
+  <?php if (!empty($book['image'])): ?>
+      <img src="uploads/<?= $book['image'] ?>" class="book-img">
+  <?php endif; ?>
 
-    <label>Price</label>
-    <input type="number" step="0.01" name="price" value="<?= $book['price'] ?>" required>
+  <form method="POST" enctype="multipart/form-data">
 
-    <label>Description</label>
-    <textarea name="description"><?= htmlspecialchars($book['description']) ?></textarea>
+    <label>Book Title</label>
+    <input name="title" type="text" required value="<?= htmlspecialchars($book['title']) ?>">
 
-    <button type="submit" name="update">حفظ التعديل</button>
-</form>
+    <label>Author Name</label>
+    <input name="author" type="text" required value="<?= htmlspecialchars($book['author']) ?>">
+
+    <label>Edition</label>
+    <input name="edition" type="text" value="<?= htmlspecialchars($book['edition']) ?>">
+
+    <label>Price (SAR)</label>
+    <input name="price" type="number" step="0.01" required value="<?= $book['price'] ?>">
+
+    <label>Change Image (optional)</label>
+    <input name="image" type="file" accept="image/*">
+
+    <button type="submit" name="update">💾 Save Changes</button>
+  </form>
 </div>
+
+<?php include 'footer.php'; ?>
 
 </body>
 </html>
